@@ -1,0 +1,14 @@
+:concurrency: 5  # 并发 worker 数
+
+:queues:
+  - [default, 1]     # 默认队列，优先级最低
+  - [mailers, 5]     # 邮件队列，优先级较高
+  - [file_operation, 2] # 文件处理队列，优先级适中
+
+# 日志文件路径
+:logfile: ./log/sidekiq.log
+
+# Sidekiq 会读取的 Redis 配置（可选）
+:redis:
+  :url: redis://localhost:6379/0
+  :namespace: sidekiq
