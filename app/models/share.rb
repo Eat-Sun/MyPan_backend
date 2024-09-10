@@ -8,52 +8,52 @@ class Share < ApplicationRecord
 
 	#分享文件
   def self.share_to_others(data, varify)
-		p "data:",data
-		# share = nil
-		# folders_id = []
-		# attachments_id = []
-		# data.each do |item|
-		# 	if item[:type] == 'folder'
-		# 		folders_id << item[:id]
-		# 	else
-		# 		attachments_id << item[:id]
-		# 	end
-		# end
-		# # p "folders_id:", folders_id
-		# # p "attachments_id:", attachments_id
-		# begin
-		# 	transaction do
-		# 		share = Share.create!(varify: varify)
+		# p "data:",data
+		share = nil
+		folders_id = []
+		attachments_id = []
+		data.each do |item|
+			if item[:type] == 'folder'
+				folders_id << item[:id]
+			else
+				attachments_id << item[:id]
+			end
+		end
+		# p "folders_id:", folders_id
+		# p "attachments_id:", attachments_id
+		begin
+			transaction do
+				share = Share.create!(varify: varify)
 
-		# 		if folders_id.present?
-		# 			# p "folders:", folders_id
-		# 			folders = Folder.includes(:attachments).where(id: folders_id)
-		# 			included_attachments_id = folders.flat_map do |folder|
-		# 				folder.attachments.ids
-		# 			end
+				if folders_id.present?
+					# p "folders:", folders_id
+					folders = Folder.includes(:attachments).where(id: folders_id)
+					included_attachments_id = folders.flat_map do |folder|
+						folder.attachment_ids
+					end
 
-		# 			share.folders << folders
+					share.folders << folders
 
-		# 			attachments_id -= included_attachments_id
-		# 		end
-		# 		if attachments_id.present?
-		# 			# p "attachments:", attachments_id
-		# 			attachments = Attachment.where(id: attachments_id)
+					attachments_id -= included_attachments_id
+				end
+				if attachments_id.present?
+					# p "attachments:", attachments_id
+					attachments = Attachment.where(id: attachments_id)
 
-		# 			share.attachments << attachments
-		# 		end
-		# 	end
+					share.attachments << attachments
+				end
+			end
 
-		# 	result = {
-		# 		share: share.id,
-		# 		link: share.link,
-		# 		varify: share.varify
-		# 	}
-		# 	return result
-		# rescue => e
-		# 	p e.message
-		# 	# p "Backtrace: #{e.backtrace}"
-		# end
+			result = {
+				share: share.id,
+				link: share.link,
+				varify: share.varify
+			}
+			return result
+		rescue => e
+			p e.message
+			# p "Backtrace: #{e.backtrace}"
+		end
   end
 
   #接收文件

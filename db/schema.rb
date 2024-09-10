@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_08_055644) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_10_075025) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
@@ -51,6 +51,8 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_08_055644) do
     t.string "file_type", default: "undefined"
     t.string "b2_key"
     t.string "byte_size"
+    t.integer "file_monitor_id"
+    t.index ["file_monitor_id"], name: "index_attachments_on_file_monitor_id", using: :lsm
     t.index ["folder_id"], name: "index_attachments_on_folder_id", using: :lsm
   end
 
@@ -62,12 +64,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_08_055644) do
   end
 
   create_table "file_monitors", force: :cascade do |t|
-    t.bigint "attachment_id"
     t.integer "owner_count", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "b2_key"
-    t.index ["attachment_id"], name: "index_file_monitors_on_attachment_id", using: :lsm
   end
 
   create_table "folders", force: :cascade do |t|

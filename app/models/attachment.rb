@@ -140,11 +140,14 @@ class Attachment < ApplicationRecord
 
       if file_monitor
         file_monitor.lock!
+
         file_monitor.increment!(:owner_count)
       else
-        self.create_file_monitor!(owner_count: 1)
+
+        FileMonitor.create!(owner_count: 1, attachments: [self])
       end
     rescue => e
+
       p "回调：", e.message
     end
   end
@@ -154,6 +157,7 @@ class Attachment < ApplicationRecord
     begin
 
       FileMonitor.where(b2_key: self.b2_key).update_counters(owner_count: -1)
+      FileMonitor.need_to_destroy
     rescue => e
       p "after_destroy回调:", e.message
     end

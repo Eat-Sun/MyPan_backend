@@ -46,6 +46,7 @@ class FileUploadChannel < ApplicationCable::Channel
 
     retries = 0
     begin
+      sleep 2
       File.open(file_path, 'wb') do |final_file|
         (1..last_chunk['totalChunks']).each do |chunk_index|
           part_file_path = directory.join("#{last_chunk['name']}.part#{chunk_index}")
