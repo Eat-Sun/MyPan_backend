@@ -74,12 +74,12 @@ module Api
 				post 'quit' do
 					begin
 						user_id = Rails.cache.read params[:token]
-						# p user_id
-						# p params[:folder_data]
+
 						if user_id
 							Rails.cache.write params[:token], user_id
 							Rails.cache.write user_id, params[:folder_data]
 						end
+
 					rescue => e
 						p e.message
 					end

@@ -36,7 +36,7 @@ class Folder < ApplicationRecord
 
 	#删除文件夹
 	def self.delete_folder target_folders_id
-		target_folders = Folder.where(target_folders_id)
+		target_folders = Folder.where(id: target_folders_id)
 
 		begin
 			if target_folders.destroy_all
