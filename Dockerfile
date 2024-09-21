@@ -1,8 +1,6 @@
-# syntax = docker/dockerfile:1
-
-# Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
 ARG RUBY_VERSION=3.3.0
-FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim as base
+# Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
+FROM m.daocloud.io/docker.io/library/ruby:$RUBY_VERSION-slim AS base
 
 # Rails app lives here
 WORKDIR /rails
@@ -13,13 +11,17 @@ ENV RAILS_ENV="production" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development"
 
-
 # Throw-away build stage to reduce size of final image
-FROM base as build
+FROM base AS build
 
 # Install packages needed to build gems
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential default-libmysqlclient-dev git libvips pkg-config
+    apt-get install --no-install-recommends -y build-essential libpq-dev git libvips pkg-config && \
+    curl -o node.tar.gz https://nodejs.org/dist/v20.15.1/node-v20.15.1-linux-x64.tar.gz && \
+    tar -xzf node.tar.gz -C /usr/local --strip-components=1 && \
+    rm node.tar.gz
+
+ENV PATH="/usr/local/bin:${PATH}"
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
@@ -33,13 +35,16 @@ COPY . .
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
 
+# Precompiling assets for production without requiring secret RAILS_MASTER_KEY
+RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
+
 
 # Final stage for app image
 FROM base
 
 # Install packages needed for deployment
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl default-mysql-client libvips && \
+    apt-get install --no-install-recommends -y curl postgresql-client libvips && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Copy built artifacts: gems, application

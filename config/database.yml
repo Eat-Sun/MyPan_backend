@@ -14,7 +14,6 @@ default: &default
   encoding: utf8
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   host: 47.100.13.100
-  # host: 139.196.89.94
   port: 5433
   username: eat_sun
   password: AngelBeats1
@@ -27,9 +26,13 @@ development:
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
-# test:
-#   <<: *default
-#   database: mypan_backend_test
+test:
+  <<: *default
+  host: localhost
+  port: 5432
+  database: mypan_backend_test
+  username: moon
+  password: 123456
 
 # As with config/credentials.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is

@@ -1,6 +1,5 @@
 class Folder < ApplicationRecord
 	belongs_to :user
-	# has_one :file_monitor
   has_many :attachments, dependent: :destroy_async
   has_and_belongs_to_many :shares
 	has_ancestry orphan_strategy: :destroy

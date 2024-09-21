@@ -4,8 +4,18 @@
 # model remove the "{}" from the fixture names and add the columns immediately
 # below each fixture, per the syntax in the comments below
 #
-one: {}
-# column: value
-#
-two: {}
-# column: value
+R_C_jpeg:
+  id: 5801
+  file_name: "R-C.jpeg"
+  file_type: "picture"
+  b2_key: "wvWE20"
+  byte_size: "455858"
+  folder_id: 101
+
+OIP_C_jpeg:
+  id: 5901
+  file_name: "OIP-C.jpeg"
+  file_type: "picture"
+  b2_key: "CEWtoh"
+  byte_size: "23615"
+  folder_id: 3

@@ -1,4 +1,4 @@
-source "https://gems.ruby-china.com/"
+source 'https://rubygems.org'
 
 ruby "3.3.0"
 
@@ -39,6 +39,11 @@ gem 'aws-sdk-s3'
 gem 'sidekiq'
 
 gem 'connection_pool'
+
+gem 'rackup'
+
+gem 'rack'
+
 
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"

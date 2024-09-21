@@ -4,8 +4,15 @@
 # model remove the "{}" from the fixture names and add the columns immediately
 # below each fixture, per the syntax in the comments below
 #
-one: {}
-# column: value
-#
-two: {}
-# column: value
+root:
+  id: 3
+  folder_name: "root"
+  ancestry: nil
+  user_id: 1
+
+newFolder:
+  id: 101
+  folder_name: "newFolder"
+  ancestry: 3
+  user_id: 1
+  
