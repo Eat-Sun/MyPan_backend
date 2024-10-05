@@ -17,32 +17,39 @@ class Attachment < ApplicationRecord
 	end
 
 	#上传文件时更新数据库
-	def self.update_of_upload_for_database user, parent_folder, file_size, file_name, b2_key, file_type = 'undefined'
-    allow_to_upload = ( user.used_space + file_size) < user.total_space
+	def self.update_of_upload_for_database user_id, parent_folder, file_size, file_name, b2_key, file_type
+    retries = 0
+    begin
+      attachment = nil
 
-    attachment = nil
-    if allow_to_upload
-      begin
-        transaction do
-          attachment = parent_folder.attachments.create!(file_name: file_name, file_type: file_type, b2_key: b2_key, byte_size: file_size)
-          user.update_column(:used_space, user.used_space + file_size)
-        end
-      rescue  => e
-        p e.message
+      transaction do
+        result = User.update_used_space user_id, file_size
+
+        attachment = parent_folder.attachments.create!(file_name: file_name, file_type: file_type, b2_key: b2_key, byte_size: file_size) if result
       end
 
-      return {
-        id: attachment.id,
-        type: attachment.file_type,
-        name: attachment.file_name,
-        b2_key: attachment.b2_key,
-        size: attachment.byte_size
-      }
-    else
-
+      if attachment
+        return {
+          id: attachment.id,
+          type: attachment.file_type,
+          name: attachment.file_name,
+          b2_key: attachment.b2_key,
+          size: attachment.byte_size
+        }
+      end
       return false
-    end
+    rescue => e
+      if retries < 3
+        retries += 1
+        sleep 1
 
+        retry
+      else
+        Attachment.models_logger.error e.message
+
+        return e
+      end
+    end
 	end
 
   #下载文件
@@ -60,7 +67,7 @@ class Attachment < ApplicationRecord
 
       presigned_urls.any? ? presigned_urls : false
     rescue => e
-      Rails.logger.error("下载文件时出现错误: #{e.message}")
+      Attachment.models_logger.error e.message
 
       return e
     end
@@ -82,7 +89,8 @@ class Attachment < ApplicationRecord
 
       return true
     rescue => e
-      p e.message
+      Attachment.models_logger.error e.message
+
       return e
     end
 
@@ -90,118 +98,101 @@ class Attachment < ApplicationRecord
 
 	# 获取文件
   def self.get_filelist_from_backblaze user
-    p "user:", Folder.includes(:attachments).find_by(user: user, folder_name: "root").subtree.arrange
     arranged_data = Folder.includes(:attachments).find_by(user: user, folder_name: "root").subtree.arrange
 
     form_data = process_data arranged_data
-    p form_data
-
+    # p form_data
     return form_data
   end
 
   # 移动文件
-  def self.move_attachments user, data, target_folder_id
-    folders_item = []
-    attachments_item = []
-    data.each do |item|
-      if item[:type] == 'folder'
-        folders_item << item[:id]
-      else
-        attachments_item << item[:id]
-      end
-    end
+  def self.move_attachments user, attachment_items_id, target_folder
+    return true if attachment_items_id.blank?
 
-    folders = Folder.where(id: folders_item)
-    attachments = Attachment.where(id: attachments_item)
-    target_folder = Folder.find(target_folder_id)
+    attachments = Attachment.where(id: attachment_items_id)
 
     begin
-      if folders and attachments and target_folder
-        transaction do
-          folders.update_all(ancestry: target_folder.id)
+      if attachments.present? and target_folder.present?
           attachments.update_all(folder_id: target_folder.id)
-        end
 
         return true
       else
 
         return false
       end
-    rescue ActiveRecord::ActiveRecordError => e
-
-      return e
-    end
-  end
-
-  private
-  def plus_file_monitor
-    begin
-      file_monitor = FileMonitor.find_by(b2_key: self.b2_key)
-
-      if file_monitor
-        file_monitor.lock!
-
-        file_monitor.increment!(:owner_count)
-      else
-
-        FileMonitor.create!(owner_count: 1, attachments: [self])
-      end
     rescue => e
-      Attachment.model_logger.error e.message
-      p "回调：", e.message
+      Attachment.models_logger.error e.message
+      p "出错：", e.message
+      raise e
     end
   end
 
   private
-  def minus_file_monitor
-    begin
-      FileMonitor.where(b2_key: self.b2_key).update_counters(owner_count: -1)
+    def plus_file_monitor
+      begin
+        file_monitor = FileMonitor.find_by(b2_key: self.b2_key)
 
-      FileMonitor.need_to_destroy
-    rescue => e
-      models_logger.error ""
-      p "after_destroy回调:", e.message
-    end
+        if file_monitor
+          file_monitor.lock!
 
-  end
+          file_monitor.increment!(:owner_count)
+        else
 
-  private
-  def self.process_data arranged_data
-    arranged_data.map do |folder, children|
+          FileMonitor.create!(owner_count: 1, attachments: [self])
+        end
+      rescue => e
+        Attachment.models_logger.error e.message
 
-      {
-        id: folder.id,
-        type: "folder",
-        name: folder.folder_name,
-        children: process_data(children) + attached_files_info(folder.attachments)
-      }
-
-    end
-  end
-
-  private
-  def self.attached_files_info(filelist)
-    filelist.map do |file|
-      {
-        id: file.id,
-        type: file.file_type,
-        name: file.file_name,
-        b2_key: file.b2_key,
-        size: file.byte_size
-      }
-    end
-  end
-
-  private
-  def self.classify data, folder_items_id, attachment_items_id
-    data.each do |item|
-      if item[:type] == 'folder'
-        folder_items_id << item["id"]
-        classify item["children"], folder_items_id, attachment_items_id
-      else
-        attachment_items_id << item["id"]
+        return e
       end
     end
-  end
 
+    def minus_file_monitor
+      begin
+        FileMonitor.where(b2_key: self.b2_key).update_counters(owner_count: -1)
+
+        FileMonitor.need_to_destroy
+      rescue => e
+        Attachment.models_logger.error e.message
+
+        return e
+      end
+
+    end
+
+    def self.process_data arranged_data
+      arranged_data.map do |folder, children|
+
+        {
+          id: folder.id,
+          type: "folder",
+          name: folder.folder_name,
+          children: process_data(children) + attached_files_info(folder.attachments)
+        }
+
+      end
+    end
+
+    def self.attached_files_info(filelist)
+      filelist.map do |file|
+        {
+          id: file.id,
+          type: file.file_type,
+          name: file.file_name,
+          b2_key: file.b2_key,
+          size: file.byte_size
+        }
+      end
+    end
+
+    def self.classify data, folder_items_id, attachment_items_id
+      data.each do |item|
+        if item[:type] == 'folder'
+          folder_items_id << item["id"]
+          classify item["children"], folder_items_id, attachment_items_id
+        else
+          attachment_items_id << item["id"]
+        end
+      end
+    end
 end

@@ -3,5 +3,6 @@ class ApplicationRecord < ActiveRecord::Base
 
   class_attribute :models_logger
 
-  self.models_logger = Logger.new(Rails.root.join('log', 'model_error.log'))
+  self.models_logger = Logger.new(Rails.root.join('log', 'model_logger.log'))
+
 end

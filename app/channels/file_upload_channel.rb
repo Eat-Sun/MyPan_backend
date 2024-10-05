@@ -81,17 +81,18 @@ class FileUploadChannel < ApplicationCable::Channel
   private
     def upload token, parent_folder_id, file_path, file_size, file_type
       user_id = Rails.cache.read token
-      user = User.find user_id
+      file_type = 'undefined' if file_type == ""
       parent_folder = Folder.find parent_folder_id
       file_name = File.basename(file_path, ".*")
       b2_key = SecureRandom.alphanumeric(6)
 
-      UploadToB2Job.perform_later user, file_path.to_s, b2_key
+      UploadToB2Job.perform_later user_id, file_path.to_s, b2_key
 
-      attachment = Attachment.update_of_upload_for_database user, parent_folder, file_size, file_name, b2_key, file_type
+      attachment = Attachment.update_of_upload_for_database user_id, parent_folder, file_size, file_name, b2_key, file_type
+      # p "attachment", attachment
 
       if attachment
-        ActionCable.server.broadcast "messages_channel_#{user.id}", { type: 'finish', data: attachment }
+        ActionCable.server.broadcast "messages_channel_#{user_id}", { type: 'finish', data: attachment }
       end
 
     end

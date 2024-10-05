@@ -64,8 +64,6 @@ module Api
 
 				end
 
-
-
 				desc "退出登陆"
 				params do
 					use :token_validater

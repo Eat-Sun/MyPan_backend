@@ -1,47 +1,43 @@
 class Share < ApplicationRecord
+	extend FolderProcess::ProcessData
+
+	belongs_to :user
 	has_and_belongs_to_many :attachments
 	has_and_belongs_to_many :folders
 
 	validates_presence_of :varify, message: "验证码不能为空"
 
-	before_create :default
+	before_save :default
 
 	#分享文件
-  def self.share_to_others(data, varify)
-		# p "data:",data
-		folders_id = []
-		attachments_id = []
-		data.each do |item|
-			if item[:type] == 'folder'
-				folders_id << item[:id]
-			else
-				attachments_id << item[:id]
+	def self.share_to_others varify, folder_items_id, attachment_items_id
+		all_folder = []
+		all_attachment = []
+
+		if folder_items_id.present?
+			Folder.includes(:attachments).find(folder_items_id).each do |folder|
+				subtree = folder.subtree
+
+				subtree.each do |item|
+					all_attachment.concat(item.attachment_ids)
+				end
+				all_folder.concat(folder.subtree_ids)
+				# p "folder.attachment_ids", folder.attachment_ids
 			end
 		end
+		all_attachment.concat(attachment_items_id)
+		# p "all_folder", all_folder
+		# p "all_attachment", all_attachment
 
+		share = nil
 		begin
-			folders = nil
-			attachments = nil
-
-			if folders_id.present?
-				folders = Folder.includes(:attachments).where(id: folders_id)
-				included_attachments_id = folders.flat_map do |folder|
-					folder.attachment_ids
-				end
-
-				attachments_id -= included_attachments_id
-			end
-			if attachments_id.present?
-				attachments = Attachment.where(id: attachments_id)
-			end
-
 			transaction do
-				if folders.present? || attachments.present?
-					share = Share.create!(varify: varify)
+				share = Share.new(varify: varify)
 
-					share.folders << folders
-					share.attachments << attachments
-				end
+				share.folder_ids = all_folder if all_folder.present?
+				share.attachment_ids = all_attachment if all_folder.present?
+
+				share.save!
 			end
 
 			result = {
@@ -51,59 +47,33 @@ class Share < ApplicationRecord
 			}
 			return result
 		rescue => e
-			p e.message
-			# p "Backtrace: #{e.backtrace}"
+			Share.models_logger.error e.message
+			p "错误", e.message
+			return e
 		end
-  end
+	end
 
-  #接收文件
-  def self.accept_from_others(user, link, varify)
-  	share = Share.includes( attachments: :file_monitor, folders: :attachments).find_by(link: link)
+	#接收文件
+	def self.accept_from_others(user, link, varify)
+		begin
+			share = Share.includes(:folders, attachments: :file_monitor).find_by(link: link)
 
-		if share and share.varify == varify
-			root_folder = user.folders.roots.first
-			target_folders = share.folders
-			target_attachments = share.attachments.map do |attachment|
-				{
-					file_name: attachment.file_name,
-					file_type: attachment.file_type,
-					b2_key: attachment.b2_key,
-					byte_size: attachment.byte_size
-				}
+			if share.varify == varify
+				folders = share.folders
+				attachments = share.attachments
+				# p "folders", folders
+				# p "attachments", attachments
+				processed_data = Folder.operate_share user, folders, attachments
+
+				return processed_data
+			else
+
+				return false
 			end
-
-			begin
-				transaction do
-					if target_folders.present?
-						target_folders.each do |folder|
-							new_folder = root_folder.children.create(folder_name: folder.folder_name, user: user)
-							new_attachments = folder.attachments.map do |attachment|
-								{
-									file_name: attachment.file_name,
-									file_type: attachment.file_type,
-									b2_key: attachment.b2_key,
-									byte_size: attachment.byte_size
-								}
-							end
-
-							new_folder.attachments.create!(new_attachments)
-						end
-					end
-
-					root_folder.attachments.create!(target_attachments) if target_attachments.present?
-	  		end
-
-	  		return Attachment.get_filelist_from_backblaze user
-			rescue => e
-				p "出现错误：#{e.message}"
-			end
-
-		else
-
-			return false
+		rescue => e
+			p "错误", e.message
 		end
-
-  end
+	end
 
   #取消分享
   def self.cancel_shares(user, shares)
@@ -137,10 +107,9 @@ class Share < ApplicationRecord
   end
 
 	private
-	def default
-		self.link = SecureRandom.alphanumeric(8)
-		self.expires_at = 7.days.from_now
+		def default
+			self.link = SecureRandom.alphanumeric(8)
+			self.expires_at = 7.days.from_now
 
-	end
-
+		end
 end

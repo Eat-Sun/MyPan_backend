@@ -11,11 +11,21 @@ module Api
 					requires :varify, type: { value: String, message: "验证码不能为空"}
 				end
 				post 'new' do
+					# puts params[:data]
+					folder_items_id = []
+					attachment_items_id = []
 					user = get_user params[:token]
-					puts params[:data]
+
+					params[:data].each do |item|
+						if item['type'] == 'folder'
+							folder_items_id << item['id']
+						else
+							attachment_items_id << item['id']
+						end
+					end
 
 					if user
-						response = Share.share_to_others( params[:data], params[:varify])
+						response = Share.share_to_others(params[:varify], folder_items_id, attachment_items_id)
 					end
 
 					if response.is_a?(Exception)
@@ -59,7 +69,7 @@ module Api
 					user = get_user params[:token]
 
 					if user
-						response = Share.get_shares( user)
+						response = Share.get_shares user
 					end
 
 					if response.is_a?(Exception)

@@ -15,21 +15,6 @@ module Api
 						}
 					end
 
-					# def get_s3
-					# 	Aws::S3::Client.new(
-					# 	  region: ENV['AWS_REGION'], # 从环境变量中获取区域信息
-					# 	  endpoint: ENV['AWS_ENDPOINT_URL'], # 从环境变量中获取端点URL
-					# 	  access_key_id: ENV['AWS_ACCESS_KEY_ID'], # 从环境变量中获取访问密钥ID
-					# 	  secret_access_key: ENV['AWS_SECRET_ACCESS_KEY'] # 从环境变量中获取秘密访问密钥
-					# 	)
-					# end
-
-					# def decode_token(token)
-					#   JWT.decode(token, ENV['JWT_SECRET'], true, algorithm: 'HS256')
-					# rescue JWT::DecodeError
-					#   nil
-					# end
-
 					def get_or_set_cache key, value = nil
 						result = Rails.cache.read key
 
@@ -51,6 +36,17 @@ module Api
 							return User.find(payload["user_id"])
 						else
 							return nil
+						end
+					end
+
+					def classify data, folder_items_id, attachment_items_id
+						data.each do |item|
+							if item[:type] == 'folder'
+								folder_items_id << item["id"]
+								classify item["children"], folder_items_id, attachment_items_id
+							else
+								attachment_items_id << item["id"]
+							end
 						end
 					end
 

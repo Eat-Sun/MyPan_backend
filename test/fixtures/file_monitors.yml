@@ -1,11 +1,99 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+att1_1:
+  id: 1
+  owner_count: 1
+  b2_key: wvWE20
 
-# This model initially had no columns defined. If you add columns to the
-# model remove the "{}" from the fixture names and add the columns immediately
-# below each fixture, per the syntax in the comments below
-#
-one: {}
-# column: value
-#
-two: {}
-# column: value
+att1_2:
+  id: 2
+  owner_count: 1
+  b2_key: dwaW3B
+
+att2_1:
+  id: 3
+  owner_count: 1
+  b2_key: xYz12A
+
+att2_2:
+  id: 4
+  owner_count: 1
+  b2_key: bC34dE
+
+att11_1:
+  id: 5
+  owner_count: 1
+  b2_key: fG56hI
+
+att11_2:
+  id: 6
+  owner_count: 1
+  b2_key: jK78lM
+
+att12_1:
+  id: 7
+  owner_count: 1
+  b2_key: nO90pQ
+
+att12_2:
+  id: 8
+  owner_count: 1
+  b2_key: rS12tU
+
+att111_1:
+  id: 9
+  owner_count: 1
+  b2_key: vW34xY
+
+att111_2:
+  id: 10
+  owner_count: 1
+  b2_key: zA56bC
+
+att121_1:
+  id: 11
+  owner_count: 1
+  b2_key: dD78eF
+
+att121_2:
+  id: 12
+  owner_count: 1
+  b2_key: gG90hJ
+
+att21_1:
+  id: 13
+  owner_count: 1
+  b2_key: kK12lM
+
+att21_2:
+  id: 14
+  owner_count: 1
+  b2_key: nN34oP
+
+att22_1:
+  id: 15
+  owner_count: 1
+  b2_key: qQ56rS
+
+att22_2:
+  id: 16
+  owner_count: 1
+  b2_key: tT78uV
+
+att211_1:
+  id: 17
+  owner_count: 1
+  b2_key: wW90xY
+
+att211_2:
+  id: 18
+  owner_count: 1
+  b2_key: zZ12aB
+
+att221_1:
+  id: 19
+  owner_count: 1
+  b2_key: cC34dE
+
+att221_2:
+  id: 20
+  owner_count: 1
+  b2_key: fF56gG

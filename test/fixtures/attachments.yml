@@ -4,18 +4,184 @@
 # model remove the "{}" from the fixture names and add the columns immediately
 # below each fixture, per the syntax in the comments below
 #
-R_C_jpeg:
-  id: 5801
-  file_name: "R-C.jpeg"
-  file_type: "picture"
-  b2_key: "wvWE20"
-  byte_size: "455858"
-  folder_id: 101
 
-OIP_C_jpeg:
-  id: 5901
-  file_name: "OIP-C.jpeg"
-  file_type: "picture"
-  b2_key: "CEWtoh"
-  byte_size: "23615"
-  folder_id: 3
+att1_1:
+  id: 11
+  file_name: att1_1
+  file_type: picture
+  b2_key: wvWE20
+  byte_size: 186154
+  folder_id: 1
+  file_monitor_id: 1
+
+att1_2:
+  id: 12
+  file_name: att1_2
+  file_type: word
+  b2_key: dwaW3B
+  byte_size: 19861654
+  folder_id: 1
+  file_monitor_id: 2
+
+att2_1:
+  id: 21
+  file_name: att2_1
+  file_type: word
+  b2_key: xYz12A
+  byte_size: 102400
+  folder_id: 2
+  file_monitor_id: 3
+
+att2_2:
+  id: 22
+  file_name: att2_2
+  file_type: undefined
+  b2_key: bC34dE
+  byte_size: 204800
+  folder_id: 2
+  file_monitor_id: 4
+
+att11_1:
+  id: 111
+  file_name: att11_1
+  file_type: undefined
+  b2_key: fG56hI
+  byte_size: 51200
+  folder_id: 11
+  file_monitor_id: 5
+
+att11_2:
+  id: 112
+  file_name: att11_2
+  file_type: picture
+  b2_key: jK78lM
+  byte_size: 307200
+  folder_id: 11
+  file_monitor_id: 6
+
+att12_1:
+  id: 121
+  file_name: att12_1
+  file_type: video
+  b2_key: nO90pQ
+  byte_size: 1048576
+  folder_id: 12
+  file_monitor_id: 7
+
+att12_2:
+  id: 122
+  file_name: att12_2
+  file_type: audio
+  b2_key: rS12tU
+  byte_size: 512000
+  folder_id: 12
+  file_monitor_id: 8
+
+att111_1:
+  id: 1111
+  file_name: att111_1
+  file_type: undefined
+  b2_key: vW34xY
+  byte_size: 256000
+  folder_id: 111
+  file_monitor_id: 9
+
+att111_2:
+  id: 1112
+  file_name: att111_2
+  file_type: word
+  b2_key: zA56bC
+  byte_size: 768000
+  folder_id: 111
+  file_monitor_id: 10
+
+att121_1:
+  id: 1211
+  file_name: att121_1
+  file_type: undefined
+  b2_key: dD78eF
+  byte_size: 102400
+  folder_id: 121
+  file_monitor_id: 11
+
+att121_2:
+  id: 1212
+  file_name: att121_2
+  file_type: word
+  b2_key: gG90hJ
+  byte_size: 10240
+  folder_id: 121
+  file_monitor_id: 12
+
+att21_1:
+  id: 211
+  file_name: att21_1
+  file_type: picture
+  b2_key: kK12lM
+  byte_size: 204800
+  folder_id: 21
+  file_monitor_id: 13
+
+att21_2:
+  id: 212
+  file_name: att21_2
+  file_type: video
+  b2_key: nN34oP
+  byte_size: 524288
+  folder_id: 21
+  file_monitor_id: 14
+
+att22_1:
+  id: 221
+  file_name: att22_1
+  file_type: audio
+  b2_key: qQ56rS
+  byte_size: 256000
+  folder_id: 22
+  file_monitor_id: 15
+
+att22_2:
+  id: 222
+  file_name: att22_2
+  file_type: word
+  b2_key: tT78uV
+  byte_size: 128000
+  folder_id: 22
+  file_monitor_id: 16
+
+att211_1:
+  id: 2111
+  file_name: att211_1
+  file_type: undefined
+  b2_key: wW90xY
+  byte_size: 51200
+  folder_id: 211
+  file_monitor_id: 17
+
+att211_2:
+  id: 2112
+  file_name: att211_2
+  file_type: picture
+  b2_key: zZ12aB
+  byte_size: 307200
+  folder_id: 211
+  file_monitor_id: 18
+
+att221_1:
+  id: 2211
+  file_name: att221_1
+  file_type: word
+  b2_key: cC34dE
+  byte_size: 768000
+  folder_id: 221
+  file_monitor_id: 19
+
+att221_2:
+  id: 2212
+  file_name: att221_2
+  file_type: word
+  b2_key: fF56gG
+  byte_size: 204800
+  folder_id: 221
+  file_monitor_id: 20
+

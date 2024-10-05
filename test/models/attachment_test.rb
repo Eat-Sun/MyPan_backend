@@ -9,7 +9,7 @@ class AttachmentTest < ActiveSupport::TestCase
     @attachment1 = Folder.find_by(user: @user, folder_name: "root").attachments.create!(file_name: "OIP-C.jpeg", file_type: "picture", b2_key: "CEWtoh", byte_size: "23615")
     @attachment2 = @subfolder1.attachments.create!(file_name: "R-C.jpeg", file_type: "picture", b2_key: "wvWE20", byte_size: "455858")
   end
-  test "the truth" do
+  test "获取用户文件信息" do
     result = Attachment.get_filelist_from_backblaze(@user)
 
     p "result", result
