@@ -76,6 +76,7 @@ module Api
 						if user_id
 							Rails.cache.write params[:token], user_id
 							Rails.cache.write user_id, params[:folder_data]
+							p params[:folder_data]
 						end
 
 					rescue => e

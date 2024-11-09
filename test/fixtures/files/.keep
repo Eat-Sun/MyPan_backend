@@ -1,0 +1,12 @@
+share:
+  - folder_id: 11
+    - attachment_id: 111
+    - attachment_id: 112
+    - folder_id: 111
+      - attachment_id: 1111
+      - attachment_id: 1112
+    - folder_id: 112
+      - attachment_id: 1121
+      - attachment_id: 1122
+  - attachment_id: 11
+  - attachment_id: 12

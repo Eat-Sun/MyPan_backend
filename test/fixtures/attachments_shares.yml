@@ -1,19 +1,39 @@
-attachments1_share1:
+attachments11_share1:
   attachment_id: 11
   share_id: 1
+  top: true
 
 attachments12_share1:
   attachment_id: 12
   share_id: 1
+  top: true
 
 attachments111_share1:
   attachment_id: 111
   share_id: 1
+  top: false
 
 attachments112_share1:
   attachment_id: 112
   share_id: 1
+  top: false
 
 attachments1111_share1:
   attachment_id: 1111
   share_id: 1
+  top: false
+
+attachments1112_share1:
+  attachment_id: 1112
+  share_id: 1
+  top: false
+
+attachments1121_share1:
+  attachment_id: 1121
+  share_id: 1
+  top: false
+
+attachments1122_share1:
+  attachment_id: 1122
+  share_id: 1
+  top: false

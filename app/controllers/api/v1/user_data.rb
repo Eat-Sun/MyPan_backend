@@ -31,18 +31,18 @@ module Api
 					end
 				end
 				post 'mover' do
-					user = get_user params[:token]
+					user = User.get_user params[:token]
 
 					if user
-						folder_items_id = []
-						attachment_items_id = []
+						folder_ids = []
+						attachment_ids = []
 						# p "params[:data][:filelist]",params[:data][:filelist]
 						begin
 							target_folder = Folder.find(params[:data][:target_folder_id])
-							classify params[:data][:filelist], folder_items_id, attachment_items_id
+							classify params[:data][:filelist], folder_ids, attachment_ids
 
-							attachment_response = Attachment.move_attachments user, attachment_items_id, target_folder
-							folder_response = Folder.move_folders user, folder_items_id, target_folder
+							attachment_response = Attachment.move_attachments user, attachment_ids, target_folder
+							folder_response = Folder.move_folders user, folder_ids, target_folder
 
 							if attachment_response && folder_response
 								build_response(code: 1, message: "移动成功")

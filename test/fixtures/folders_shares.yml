@@ -1,7 +1,14 @@
 folder11_share1:
   folder_id: 11
   share_id: 1
+  top: true
 
 folder111_share1:
   folder_id: 111
   share_id: 1
+  top: false
+
+folder112_share1:
+  folder_id: 112
+  share_id: 1
+  top: false

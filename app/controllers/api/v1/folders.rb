@@ -9,13 +9,14 @@ module Api
 				params do
 					use :token_validater
 					requires :new_folder, type: { value: String, message: "请输入文件夹名"}
-					requires :parent_folder_id, type: { value: String, message: ""}
+					requires :parent_folder_numbering, type: String
 				end
 				post 'newFolder' do
-					user = get_user params[:token]
+
+					user = User.get_user params[:token]
 
 					if user
-						response = Folder.create_folder(user, params[:parent_folder_id], params[:new_folder])
+						response = Folder.create_folder(user, params[:parent_folder_numbering], params[:new_folder])
 					else
 						build_response(message: "用户不合法", exception: response.message)
 					end
@@ -35,7 +36,7 @@ module Api
 					requires :target_folder_id, type: { value: String, message: "请输入文件夹名"}
 				end
 				post 'removeFolder' do
-					user = get_user params[:token]
+					user = User.get_user params[:token]
 					if user
 						response = Folder.delete_folder(user, params[:target_folder_id])
 					else

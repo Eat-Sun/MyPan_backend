@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_04_075201) do
+ActiveRecord::Schema[7.1].define(version: 2024_10_19_140720) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -58,6 +58,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_04_075201) do
   create_table "attachments_shares", id: false, force: :cascade do |t|
     t.bigint "attachment_id"
     t.bigint "share_id"
+    t.boolean "top"
     t.index ["attachment_id"], name: "index_attachments_shares_on_attachment_id"
     t.index ["share_id"], name: "index_attachments_shares_on_share_id"
   end
@@ -75,13 +76,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_04_075201) do
     t.string "ancestry"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "numbering"
     t.index ["ancestry"], name: "index_folders_on_ancestry"
+    t.index ["numbering"], name: "index_folders_on_numbering"
     t.index ["user_id"], name: "index_folders_on_user_id"
   end
 
   create_table "folders_shares", id: false, force: :cascade do |t|
     t.bigint "folder_id"
     t.bigint "share_id"
+    t.boolean "top"
     t.index ["folder_id"], name: "index_folders_shares_on_folder_id"
     t.index ["share_id"], name: "index_folders_shares_on_share_id"
   end

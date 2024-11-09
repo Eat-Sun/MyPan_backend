@@ -53,17 +53,13 @@ module Api
 					requires :data, type: { value: Array, message: "文件不能为空"}
 				end
 				post 'deleter' do
-					user_id = Rails.cache.read params[:token]
+					folder_ids = []
+					attachement_ids = []
+					classify params[:data], folder_ids, attachement_ids
+					p folder_ids
+					p attachement_ids
 
-					if user_id
-						user = User.find user_id
-					else
-						user = get_user params[:token]
-					end
-
-					if user
-						response = Attachment.update_of_destroy_for_database( user, params[:data])
-					end
+					response = Attachment.update_of_destroy_for_database(folder_ids, attachement_ids)
 
 					if response.is_a?(Exception)
 					  build_response(message: "错误", exception: response.message)

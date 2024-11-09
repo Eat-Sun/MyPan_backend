@@ -1,7 +1,6 @@
 class FileMonitor < ApplicationRecord
   has_many :attachments
 	validates :owner_count, presence: { message: "所有者数量不能为空"}
-
 	validate :attachment_must_be_present
 
   def self.need_to_destroy

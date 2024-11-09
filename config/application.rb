@@ -36,5 +36,7 @@ module MypanBackend
 
     config.middleware.use ActionDispatch::Cookies
     config.middleware.use ActionDispatch::Session::CookieStore
+
+    config.skylight.environments << "development"
   end
 end
