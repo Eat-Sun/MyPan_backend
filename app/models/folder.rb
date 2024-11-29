@@ -1,24 +1,25 @@
 class Folder < ApplicationRecord
 	include ActsAsTree
-
 	extend FolderProcess::ProcessData
 
 	belongs_to :user
   has_many :attachments, dependent: :destroy_async
 	has_many :folders_shares, class_name: "FolderShare", dependent: :delete_all
   has_many :shares, through: :folders_shares
-	# has_ancestry orphan_strategy: :destroy
+
+	scope :in_bins, -> { where(:in_bins => true).pluck(:id) }
+
 	acts_as_tree primary_key: 'numbering', foreign_key: 'ancestry'
 
 	#创建文件夹
-	def self.create_folder user, parent_folder_numbering, new_folder_name
-		parent_folder = user.folders.find_by!(numbering: parent_folder_numbering)
+	def self.create_folder user_id, parent_folder_numbering, new_folder_name
+		parent_folder = Folder.find_by!(user: user_id, numbering: parent_folder_numbering)
 
 	  return false unless parent_folder
 
     begin
-			numbering = generate_numbering user
-      new_children_folder = parent_folder.children.create!(user: user, folder_name: new_folder_name, numbering: numbering)
+			numbering = generate_numbering user_id
+      new_children_folder = parent_folder.children.create!(user: user_id, folder_name: new_folder_name, numbering: numbering)
     	if new_children_folder.persisted?
 				result = {
 					id: new_children_folder.id,
@@ -61,7 +62,7 @@ class Folder < ApplicationRecord
 	end
 
 	#移动文件夹
-	def self.move_folders user, folder_items_id, target_folder
+	def self.move_folders folder_items_id, target_folder
 		return true if folder_items_id.blank?
 
     folders = Folder.where(id: folder_items_id)
@@ -83,8 +84,8 @@ class Folder < ApplicationRecord
 	end
 
 	private
-		def self.generate_numbering user
-			user.id.to_s << '_' << SecureRandom.alphanumeric(4).to_s
+		def self.generate_numbering user_id
+			user_id.to_s << '_' << SecureRandom.alphanumeric(4).to_s
 		end
 		# def self.set_subtree folders, attachments
 		# 	begin

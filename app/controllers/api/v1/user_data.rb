@@ -10,12 +10,12 @@ module Api
 					use :token_validater
 				end
 				get 'getter' do
-					user_id = Rails.cache.read params[:token]
+					user_id = User.get_user params[:token]
 
 					if user_id
-						folder_data = Rails.cache.read user_id
+						data = Rails.cache.read user_id
 
-						build_response(code: 1, data: folder_data, message: "读取成功")
+						build_response(code: 1, data: data, message: "读取成功")
 					else
 						build_response(code: -1, data: nil, message: "未登录")
 					end
@@ -31,9 +31,9 @@ module Api
 					end
 				end
 				post 'mover' do
-					user = User.get_user params[:token]
+					user_id = User.get_user params[:token]
 
-					if user
+					if user_id
 						folder_ids = []
 						attachment_ids = []
 						# p "params[:data][:filelist]",params[:data][:filelist]
@@ -41,8 +41,8 @@ module Api
 							target_folder = Folder.find(params[:data][:target_folder_id])
 							classify params[:data][:filelist], folder_ids, attachment_ids
 
-							attachment_response = Attachment.move_attachments user, attachment_ids, target_folder
-							folder_response = Folder.move_folders user, folder_ids, target_folder
+							attachment_response = Attachment.move_attachments attachment_ids, target_folder
+							folder_response = Folder.move_folders folder_ids, target_folder
 
 							if attachment_response && folder_response
 								build_response(code: 1, message: "移动成功")
@@ -50,7 +50,7 @@ module Api
 								build_response(code: 0, message: "移动失败，未能找到相关项", exception: "未能找到相关项")
 							end
 						rescue => e
-							p "错误：",e.message
+							# p "错误：",e.message
 							build_response(code: 0, message: "错误", exception: e.message)
 						end
 					end

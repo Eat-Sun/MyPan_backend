@@ -8,8 +8,12 @@ user1:
   id: 1
   username: user1
   email: aaa@qq.com
+  total_space: 1000
+  used_space: 200
 
 user2:
   id: 2
   username: user2
   email: bbb@qq.com
+  total_space: 1000
+  used_space: 200

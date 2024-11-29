@@ -6,6 +6,7 @@ module Api
 		mount V1::Attachments
 		mount V1::Shares
 		mount V1::UserData
+		mount V1::RecycleBins
 
 		# http_basic do | username, password|
 		# 	username == 'test' and password == 'test password'

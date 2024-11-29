@@ -32,7 +32,7 @@ module Api
 
 				desc "下载文件"
 				params do
-					requires :b2_keys, type: { value: Array, message: "不能为空" }
+					requires :key_and_names, type: { value: Array, message: "不能为空" }
 				end
 				get 'downloader' do
 					response = Attachment.download_from_blackblaze params[:b2_keys]
@@ -47,29 +47,29 @@ module Api
 
 				end
 
-				desc "删除文件"
-				params do
-					use :token_validater
-					requires :data, type: { value: Array, message: "文件不能为空"}
-				end
-				post 'deleter' do
-					folder_ids = []
-					attachement_ids = []
-					classify params[:data], folder_ids, attachement_ids
-					p folder_ids
-					p attachement_ids
+				# desc "删除文件"
+				# params do
+				# 	use :token_validater
+				# 	requires :data, type: { value: Array, message: "文件不能为空"}
+				# end
+				# post 'deleter' do
+				# 	folder_ids = []
+				# 	attachement_ids = []
+				# 	classify params[:data], folder_ids, attachement_ids
+				# 	# p folder_ids
+				# 	# p attachement_ids
 
-					response = Attachment.update_of_destroy_for_database(folder_ids, attachement_ids)
+				# 	response = Attachment.update_of_destroy_for_database(folder_ids, attachement_ids)
 
-					if response.is_a?(Exception)
-					  build_response(message: "错误", exception: response.message)
-					elsif response
-					  build_response(code: 1, data: response, message: "删除成功")
-					else
-					  build_response(code: -1, data: nil, message: "删除失败")
-					end
+				# 	if response.is_a?(Exception)
+				# 	  build_response(message: "错误", exception: response.message)
+				# 	elsif response
+				# 	  build_response(code: 1, data: response, message: "删除成功")
+				# 	else
+				# 	  build_response(code: -1, data: nil, message: "删除失败")
+				# 	end
 
-				end
+				# end
 
 				# desc "获取文件夹及文件"
 				# params do

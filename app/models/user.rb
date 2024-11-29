@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-  include Skylight::Helpers
+  # include Skylight::Helpers
   authenticates_with_sorcery!
 
   attr_accessor :password, :password_confirmation
@@ -22,6 +22,11 @@ class User < ApplicationRecord
 
   has_many :folders, dependent: :destroy
   has_many :shares, dependent: :destroy
+  has_many :recycle_bin, dependent: :destroy
+
+  def self.get_free_space user_id
+    User.where(id: user_id).pluck(Arel.sql("total_space - used_space")).first
+  end
 
   def self.update_used_space user_id, file_size
     begin
@@ -39,20 +44,19 @@ class User < ApplicationRecord
     end
   end
 
-  instrument_method title: 'get_user'
   def self.get_user token
     user_id = Rails.cache.read token
 
     if user_id
 
-      return User.find(user_id)
+      return user_id
     else
       decoded_token = OperateToken.decode_token token
 
       if decoded_token
         payload = decoded_token[0]
 
-        return User.find(payload["user_id"])
+        return payload["user_id"]
       else
 
         return nil

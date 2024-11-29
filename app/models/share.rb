@@ -42,13 +42,13 @@ class Share < ApplicationRecord
 	end
 
 	#接收文件
-	def self.accept_from_others(user, link, varify)
+	def self.accept_from_others(user_id, link, varify)
 		begin
 			share = Share.find_by!(link: link)
-			root = Folder.find_by!(user_id: user, folder_name: 'root')
+			root = Folder.find_by!(user: user_id, folder_name: 'root')
 
 			if share && share.varify == varify
-				new_folders_with_attachments = get_folders_with_attachments user, share, root
+				new_folders_with_attachments = get_folders_with_attachments user_id, share, root
 				# p new_folders_with_attachments
 				new_attachments = get_top_attachments share, root
 
@@ -109,8 +109,8 @@ class Share < ApplicationRecord
   end
 
   #获取当前分享
-  def self.get_shares user
-		shares = user.shares
+  def self.get_shares user_id
+		shares = Share.where(user: user_id)
 		shared_attachments = []
 
 		shares.each do |share|
@@ -130,7 +130,7 @@ class Share < ApplicationRecord
 			self.expires_at = 7.days.from_now
 		end
 
-		def self.get_folders_with_attachments user, share, root
+		def self.get_folders_with_attachments user_id, share, root
 			Folder.joins(:attachments, :shares)
 				.select("jsonb_build_object(
 						'folder_name', folders.folder_name,
@@ -149,7 +149,7 @@ class Share < ApplicationRecord
 				.group("folders.id, folders_shares.top")
 				.map do |folder|
 					{
-						user_id: user.id,
+						user_id: user_id,
 						folder_name: folder.result["folder_name"],
 						numbering: folder.result["numbering"],
 						ancestry: folder.result["top"] == true ? root.numbering : folder.result["ancestry"] ,

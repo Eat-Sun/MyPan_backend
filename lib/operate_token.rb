@@ -19,6 +19,7 @@ module OperateToken
 
     def decode_token(token)
       decoded_token = JWT.decode(token, Constants::JWT_SECRET, true, algorithm: Constants::ALGORITHM)
+
       payload = decoded_token.first
       # 检查 token 是否过期
       if payload['exp'] < Time.now.to_i

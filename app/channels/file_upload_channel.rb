@@ -90,11 +90,8 @@ class FileUploadChannel < ApplicationCable::Channel
 
       attachment = Attachment.update_of_upload_for_database user_id, parent_folder, file_size, file_name, b2_key, file_type
       # p "attachment", attachment
-
       if attachment
         ActionCable.server.broadcast "messages_channel_#{user_id}", { type: 'finish', data: attachment }
       end
-
     end
-
 end

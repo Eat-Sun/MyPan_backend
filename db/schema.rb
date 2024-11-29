@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_10_19_140720) do
+ActiveRecord::Schema[7.1].define(version: 2024_11_27_070112) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -51,8 +51,10 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_140720) do
     t.string "b2_key"
     t.string "byte_size"
     t.integer "file_monitor_id"
+    t.boolean "in_bins"
     t.index ["file_monitor_id"], name: "index_attachments_on_file_monitor_id"
     t.index ["folder_id"], name: "index_attachments_on_folder_id"
+    t.index ["in_bins"], name: "index_attachments_on_in_bins"
   end
 
   create_table "attachments_shares", id: false, force: :cascade do |t|
@@ -77,7 +79,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_140720) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "numbering"
+    t.boolean "in_bins"
     t.index ["ancestry"], name: "index_folders_on_ancestry"
+    t.index ["in_bins"], name: "index_folders_on_in_bins"
     t.index ["numbering"], name: "index_folders_on_numbering"
     t.index ["user_id"], name: "index_folders_on_user_id"
   end
@@ -88,6 +92,20 @@ ActiveRecord::Schema[7.1].define(version: 2024_10_19_140720) do
     t.boolean "top"
     t.index ["folder_id"], name: "index_folders_shares_on_folder_id"
     t.index ["share_id"], name: "index_folders_shares_on_share_id"
+  end
+
+  create_table "recycle_bins", force: :cascade do |t|
+    t.bigint "user_id"
+    t.integer "mix_id"
+    t.string "type"
+    t.string "name"
+    t.string "b2_key"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "byte_size"
+    t.string "numbering"
+    t.index ["mix_id", "b2_key"], name: "index_recycle_bins_on_mix_id_and_b2_key"
+    t.index ["user_id"], name: "index_recycle_bins_on_user_id"
   end
 
   create_table "shares", force: :cascade do |t|

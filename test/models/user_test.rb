@@ -7,6 +7,6 @@ class UserTest < ActiveSupport::TestCase
 
   test "the truth" do
 
-    assert true
+    p User.get_free_space @user1.id
   end
 end

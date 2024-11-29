@@ -13,6 +13,8 @@ class Attachment < ApplicationRecord
 	scope :audios, -> { where(:file_type => 'audio')}
 	scope :undefined, -> { where(:file_type => 'undefined')}
 
+	scope :in_bins, -> { where(:in_bins => true).pluck(:id) }
+
 	module Initial
 		BucketName = { My_Pan: 'My-Pan'}
 	end
@@ -53,12 +55,12 @@ class Attachment < ApplicationRecord
 	end
 
   #下载文件
-  def self.download_from_blackblaze b2_keys
+  def self.download_from_blackblaze key_and_names
     begin
       presigned_urls = []
 
-      b2_keys.each do |b2_key|
-        obj = S3_Resource.bucket(Conf::BUCKETNAME[:My_Pan]).object(b2_key)
+      key_and_names.each do |item|
+        obj = S3_Resource.bucket(Conf::BUCKETNAME[:My_Pan]).object(item[:key])
         if obj.exists?
           presigned_url = obj.presigned_url(:get, expires_in: 172800)
           presigned_urls << presigned_url
@@ -75,21 +77,21 @@ class Attachment < ApplicationRecord
   end
 
   #删除文件
-  def self.update_of_destroy_for_database folder_ids, attachement_ids
-    begin
-      if folder_ids.any? || attachement_ids.any?
+  # def self.update_of_destroy_for_database folder_ids, attachement_ids
+  #   begin
+  #     if folder_ids.any? || attachement_ids.any?
 
-        RemoveAttachmentAndFolderJob.perform_later(folder_ids, attachement_ids)
-      end
+  #       RemoveAttachmentAndFolderJob.perform_later(folder_ids, attachement_ids)
+  #     end
 
-      return true
-    rescue => e
-      Attachment.models_logger.error e.message
+  #     return true
+  #   rescue => e
+  #     Attachment.models_logger.error e.message
 
-      return e
-    end
+  #     return e
+  #   end
 
-  end
+  # end
 
 	# 获取文件
   def self.get_filelist_from_backblaze user
@@ -127,7 +129,7 @@ class Attachment < ApplicationRecord
   end
 
   # 移动文件
-  def self.move_attachments user, attachment_items_id, target_folder
+  def self.move_attachments attachment_items_id, target_folder
     return true if attachment_items_id.blank?
 
     attachments = Attachment.where(id: attachment_items_id)
@@ -187,39 +189,39 @@ class Attachment < ApplicationRecord
       end
     end
 
-    def self.process_data arranged_data
-      arranged_data.map do |folder, children|
+    # def self.process_data arranged_data
+    #   arranged_data.map do |folder, children|
 
-        {
-          id: folder.id,
-          type: "folder",
-          name: folder.folder_name,
-          children: process_data(children) + attached_files_info(folder.attachments)
-        }
+    #     {
+    #       id: folder.id,
+    #       type: "folder",
+    #       name: folder.folder_name,
+    #       children: process_data(children) + attached_files_info(folder.attachments)
+    #     }
 
-      end
-    end
+    #   end
+    # end
 
-    def self.attached_files_info(filelist)
-      filelist.map do |file|
-        {
-          id: file.id,
-          type: file.file_type,
-          name: file.file_name,
-          b2_key: file.b2_key,
-          size: file.byte_size
-        }
-      end
-    end
+    # def self.attached_files_info(filelist)
+    #   filelist.map do |file|
+    #     {
+    #       id: file.id,
+    #       type: file.file_type,
+    #       name: file.file_name,
+    #       b2_key: file.b2_key,
+    #       size: file.byte_size
+    #     }
+    #   end
+    # end
 
-    def self.classify data, folder_items_id, attachment_items_id
-      data.each do |item|
-        if item[:type] == 'folder'
-          folder_items_id << item["id"]
-          classify item["children"], folder_items_id, attachment_items_id
-        else
-          attachment_items_id << item["id"]
-        end
-      end
-    end
+    # def self.classify data, folder_items_id, attachment_items_id
+    #   data.each do |item|
+    #     if item[:type] == 'folder'
+    #       folder_items_id << item["id"]
+    #       classify item["children"], folder_items_id, attachment_items_id
+    #     else
+    #       attachment_items_id << item["id"]
+    #     end
+    #   end
+    # end
 end

@@ -14,10 +14,10 @@ module Api
 				post 'new' do
 					folder_opts = []
 					attachment_opts = []
-					user = User.get_user params[:token]
+					user_id = User.get_user params[:token]
 					top = params[:top].to_set
 
-					share = Share.create!(user: user, link: params[:link], varify: params[:varify])
+					share = Share.create!(user: user_id, link: params[:link], varify: params[:varify])
 					params[:data].each do |item|
 						is_top = top.include? item
 
@@ -47,10 +47,10 @@ module Api
 					requires :varify, type: { value: String, message: "验证码不能为空"}
 				end
 				get 'getter' do
-					user = User.get_user params[:token]
+					user_id = User.get_user params[:token]
 
-					if user
-						response = Share.accept_from_others(user, params[:link], params[:varify])
+					if user_id
+						response = Share.accept_from_others(user_id, params[:link], params[:varify])
 					end
 
 					if response.is_a?(Exception)
@@ -68,10 +68,10 @@ module Api
 					use :token_validater
 				end
 				get 'shared' do
-					user = User.get_user params[:token]
+					user_id = User.get_user params[:token]
 
-					if user
-						response = Share.get_shares user
+					if user_id
+						response = Share.get_shares user_id
 					end
 
 					if response.is_a?(Exception)
@@ -89,7 +89,7 @@ module Api
 					requires :link, type: { value: String, message: "链接不能为空"}
 				end
 				post 'concel' do
-					user_id = Rails.cache.read params[:token]
+					user_id = User.get_user params[:token]
 
 					if user_id
 						response = Share.cancel_shares params[:link]

@@ -13,6 +13,7 @@ att1_1:
   byte_size: 186154
   folder_id: 1
   file_monitor_id: 1
+  in_bins: false
 
 att1_2:
   id: 12
@@ -22,6 +23,7 @@ att1_2:
   byte_size: 19861654
   folder_id: 1
   file_monitor_id: 2
+  in_bins: false
 
 att11_1:
   id: 111
@@ -31,6 +33,7 @@ att11_1:
   byte_size: 51200
   folder_id: 11
   file_monitor_id: 5
+  in_bins: true
 
 att11_2:
   id: 112
@@ -40,6 +43,7 @@ att11_2:
   byte_size: 307200
   folder_id: 11
   file_monitor_id: 6
+  in_bins: true
 
 att12_1:
   id: 121
@@ -49,6 +53,7 @@ att12_1:
   byte_size: 1048576
   folder_id: 12
   file_monitor_id: 7
+  in_bins: false
 
 att12_2:
   id: 122
@@ -58,6 +63,7 @@ att12_2:
   byte_size: 512000
   folder_id: 12
   file_monitor_id: 8
+  in_bins: false
 
 att111_1:
   id: 1111
@@ -67,6 +73,7 @@ att111_1:
   byte_size: 256000
   folder_id: 111
   file_monitor_id: 9
+  in_bins: true
 
 att111_2:
   id: 1112
@@ -76,6 +83,7 @@ att111_2:
   byte_size: 768000
   folder_id: 111
   file_monitor_id: 10
+  in_bins: true
 
 att112_1:
   id: 1121
@@ -85,6 +93,7 @@ att112_1:
   byte_size: 189641
   folder_id: 112
   file_monitor_id: 11
+  in_bins: true
 
 att112_2:
   id: 1122
@@ -94,6 +103,7 @@ att112_2:
   byte_size: 168198
   folder_id: 112
   file_monitor_id: 12
+  in_bins: true
 
 att121_1:
   id: 1211
@@ -103,6 +113,7 @@ att121_1:
   byte_size: 102400
   folder_id: 121
   file_monitor_id: 13
+  in_bins: false
 
 att121_2:
   id: 1212
@@ -112,6 +123,7 @@ att121_2:
   byte_size: 10240
   folder_id: 121
   file_monitor_id: 14
+  in_bins: false
 
 att2_1:
   id: 21
@@ -121,6 +133,7 @@ att2_1:
   byte_size: 102400
   folder_id: 2
   file_monitor_id: 3
+  in_bins: false
 
 att2_2:
   id: 22
@@ -130,6 +143,7 @@ att2_2:
   byte_size: 204800
   folder_id: 2
   file_monitor_id: 4
+  in_bins: false
 
 att21_1:
   id: 211
@@ -139,6 +153,7 @@ att21_1:
   byte_size: 204800
   folder_id: 21
   file_monitor_id: 15
+  in_bins: false
 
 att21_2:
   id: 212
@@ -148,6 +163,7 @@ att21_2:
   byte_size: 524288
   folder_id: 21
   file_monitor_id: 16
+  in_bins: false
 
 att22_1:
   id: 221
@@ -157,6 +173,7 @@ att22_1:
   byte_size: 256000
   folder_id: 22
   file_monitor_id: 17
+  in_bins: false
 
 att22_2:
   id: 222
@@ -166,6 +183,7 @@ att22_2:
   byte_size: 128000
   folder_id: 22
   file_monitor_id: 18
+  in_bins: false
 
 att211_1:
   id: 2111
@@ -175,6 +193,7 @@ att211_1:
   byte_size: 51200
   folder_id: 211
   file_monitor_id: 19
+  in_bins: false
 
 att211_2:
   id: 2112
@@ -184,6 +203,7 @@ att211_2:
   byte_size: 307200
   folder_id: 211
   file_monitor_id: 20
+  in_bins: false
 
 att221_1:
   id: 2211
@@ -193,6 +213,7 @@ att221_1:
   byte_size: 768000
   folder_id: 221
   file_monitor_id: 21
+  in_bins: false
 
 att221_2:
   id: 2212
@@ -202,4 +223,5 @@ att221_2:
   byte_size: 204800
   folder_id: 221
   file_monitor_id: 22
+  in_bins: false
 
