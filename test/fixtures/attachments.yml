@@ -23,14 +23,7 @@ att1_2:
   byte_size: 19861654
   folder_id: 1
   file_monitor_id: 2
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   in_bins: false
->>>>>>> 添加回收站功能
-=======
-  in_bins: false
->>>>>>> 添加回收站功能
 
 att11_1:
   id: 111
@@ -111,27 +104,6 @@ att112_2:
   folder_id: 112
   file_monitor_id: 12
   in_bins: true
-<<<<<<< HEAD
-
-att112_1:
-  id: 1121
-  file_name: att112_1
-  file_type: undefined
-  b2_key: Ag3Wg1
-  byte_size: 189641
-  folder_id: 112
-  file_monitor_id: 11
-
-att112_2:
-  id: 1122
-  file_name: att112_2
-  file_type: word
-  b2_key: zB56dE
-  byte_size: 168198
-  folder_id: 112
-  file_monitor_id: 12
-=======
->>>>>>> 添加回收站功能
 
 att121_1:
   id: 1211
@@ -141,14 +113,7 @@ att121_1:
   byte_size: 102400
   folder_id: 121
   file_monitor_id: 13
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   in_bins: false
->>>>>>> 添加回收站功能
-=======
-  in_bins: false
->>>>>>> 添加回收站功能
 
 att121_2:
   id: 1212
@@ -158,14 +123,7 @@ att121_2:
   byte_size: 10240
   folder_id: 121
   file_monitor_id: 14
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   in_bins: false
->>>>>>> 添加回收站功能
-=======
-  in_bins: false
->>>>>>> 添加回收站功能
 
 att2_1:
   id: 21
@@ -175,14 +133,7 @@ att2_1:
   byte_size: 102400
   folder_id: 2
   file_monitor_id: 3
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   in_bins: false
->>>>>>> 添加回收站功能
-=======
-  in_bins: false
->>>>>>> 添加回收站功能
 
 att2_2:
   id: 22
@@ -192,14 +143,7 @@ att2_2:
   byte_size: 204800
   folder_id: 2
   file_monitor_id: 4
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   in_bins: false
->>>>>>> 添加回收站功能
-=======
-  in_bins: false
->>>>>>> 添加回收站功能
 
 att21_1:
   id: 211
@@ -209,14 +153,7 @@ att21_1:
   byte_size: 204800
   folder_id: 21
   file_monitor_id: 15
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   in_bins: false
->>>>>>> 添加回收站功能
-=======
-  in_bins: false
->>>>>>> 添加回收站功能
 
 att21_2:
   id: 212
@@ -226,14 +163,7 @@ att21_2:
   byte_size: 524288
   folder_id: 21
   file_monitor_id: 16
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   in_bins: false
->>>>>>> 添加回收站功能
-=======
-  in_bins: false
->>>>>>> 添加回收站功能
 
 att22_1:
   id: 221
@@ -243,14 +173,7 @@ att22_1:
   byte_size: 256000
   folder_id: 22
   file_monitor_id: 17
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   in_bins: false
->>>>>>> 添加回收站功能
-=======
-  in_bins: false
->>>>>>> 添加回收站功能
 
 att22_2:
   id: 222
@@ -260,14 +183,7 @@ att22_2:
   byte_size: 128000
   folder_id: 22
   file_monitor_id: 18
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   in_bins: false
->>>>>>> 添加回收站功能
-=======
-  in_bins: false
->>>>>>> 添加回收站功能
 
 att211_1:
   id: 2111
@@ -277,14 +193,7 @@ att211_1:
   byte_size: 51200
   folder_id: 211
   file_monitor_id: 19
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   in_bins: false
->>>>>>> 添加回收站功能
-=======
-  in_bins: false
->>>>>>> 添加回收站功能
 
 att211_2:
   id: 2112
@@ -294,14 +203,7 @@ att211_2:
   byte_size: 307200
   folder_id: 211
   file_monitor_id: 20
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   in_bins: false
->>>>>>> 添加回收站功能
-=======
-  in_bins: false
->>>>>>> 添加回收站功能
 
 att221_1:
   id: 2211
@@ -311,14 +213,7 @@ att221_1:
   byte_size: 768000
   folder_id: 221
   file_monitor_id: 21
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   in_bins: false
->>>>>>> 添加回收站功能
-=======
-  in_bins: false
->>>>>>> 添加回收站功能
 
 att221_2:
   id: 2212
@@ -328,12 +223,5 @@ att221_2:
   byte_size: 204800
   folder_id: 221
   file_monitor_id: 22
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   in_bins: false
->>>>>>> 添加回收站功能
-=======
-  in_bins: false
->>>>>>> 添加回收站功能
 

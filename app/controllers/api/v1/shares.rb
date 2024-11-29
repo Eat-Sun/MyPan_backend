@@ -14,24 +14,10 @@ module Api
 				post 'new' do
 					folder_opts = []
 					attachment_opts = []
-<<<<<<< HEAD
-<<<<<<< HEAD
-					user = User.get_user params[:token]
-					top = params[:top].to_set
-
-					share = Share.create!(user: user, link: params[:link], varify: params[:varify])
-=======
 					user_id = User.get_user params[:token]
 					top = params[:top].to_set
 
 					share = Share.create!(user: user_id, link: params[:link], varify: params[:varify])
->>>>>>> 添加回收站功能
-=======
-					user_id = User.get_user params[:token]
-					top = params[:top].to_set
-
-					share = Share.create!(user: user_id, link: params[:link], varify: params[:varify])
->>>>>>> 添加回收站功能
 					params[:data].each do |item|
 						is_top = top.include? item
 
@@ -61,24 +47,10 @@ module Api
 					requires :varify, type: { value: String, message: "验证码不能为空"}
 				end
 				get 'getter' do
-<<<<<<< HEAD
-<<<<<<< HEAD
-					user = User.get_user params[:token]
-
-					if user
-						response = Share.accept_from_others(user, params[:link], params[:varify])
-=======
 					user_id = User.get_user params[:token]
 
 					if user_id
 						response = Share.accept_from_others(user_id, params[:link], params[:varify])
->>>>>>> 添加回收站功能
-=======
-					user_id = User.get_user params[:token]
-
-					if user_id
-						response = Share.accept_from_others(user_id, params[:link], params[:varify])
->>>>>>> 添加回收站功能
 					end
 
 					if response.is_a?(Exception)
@@ -96,15 +68,7 @@ module Api
 					use :token_validater
 				end
 				get 'shared' do
-<<<<<<< HEAD
-<<<<<<< HEAD
-					user = User.get_user params[:token]
-=======
 					user_id = User.get_user params[:token]
->>>>>>> 添加回收站功能
-=======
-					user_id = User.get_user params[:token]
->>>>>>> 添加回收站功能
 
 					if user_id
 						response = Share.get_shares user_id
@@ -125,15 +89,7 @@ module Api
 					requires :link, type: { value: String, message: "链接不能为空"}
 				end
 				post 'concel' do
-<<<<<<< HEAD
-<<<<<<< HEAD
-					user_id = Rails.cache.read params[:token]
-=======
 					user_id = User.get_user params[:token]
->>>>>>> 添加回收站功能
-=======
-					user_id = User.get_user params[:token]
->>>>>>> 添加回收站功能
 
 					if user_id
 						response = Share.cancel_shares params[:link]

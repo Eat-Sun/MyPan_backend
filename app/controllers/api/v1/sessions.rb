@@ -71,20 +71,9 @@ module Api
 
 						if user_id
 							Rails.cache.write params[:token], user_id
-<<<<<<< HEAD
-<<<<<<< HEAD
-							Rails.cache.write user_id, params[:folder_data]
-							p params[:folder_data]
-=======
 							Rails.cache.write user_id, params[:data]
 							p params[:data]
 							status 200
->>>>>>> 添加回收站功能
-=======
-							Rails.cache.write user_id, params[:data]
-							p params[:data]
-							status 200
->>>>>>> 添加回收站功能
 						end
 
 					rescue => e

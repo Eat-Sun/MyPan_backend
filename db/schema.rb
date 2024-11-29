@@ -10,15 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-ActiveRecord::Schema[7.1].define(version: 2024_10_19_140720) do
-=======
 ActiveRecord::Schema[7.1].define(version: 2024_11_27_070112) do
->>>>>>> 添加回收站功能
-=======
-ActiveRecord::Schema[7.1].define(version: 2024_11_27_070112) do
->>>>>>> 添加回收站功能
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -87,19 +79,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_27_070112) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "numbering"
-<<<<<<< HEAD
-<<<<<<< HEAD
-    t.index ["ancestry"], name: "index_folders_on_ancestry"
-=======
     t.boolean "in_bins"
     t.index ["ancestry"], name: "index_folders_on_ancestry"
     t.index ["in_bins"], name: "index_folders_on_in_bins"
->>>>>>> 添加回收站功能
-=======
-    t.boolean "in_bins"
-    t.index ["ancestry"], name: "index_folders_on_ancestry"
-    t.index ["in_bins"], name: "index_folders_on_in_bins"
->>>>>>> 添加回收站功能
     t.index ["numbering"], name: "index_folders_on_numbering"
     t.index ["user_id"], name: "index_folders_on_user_id"
   end

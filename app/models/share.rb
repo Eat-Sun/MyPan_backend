@@ -39,115 +39,6 @@ class Share < ApplicationRecord
 				return e
 			end
 		# end
-<<<<<<< HEAD
-<<<<<<< HEAD
-	end
-
-	#接收文件
-	def self.accept_from_others(user, link, varify)
-		begin
-			share = Share.find_by!(link: link)
-			root = Folder.find_by!(user_id: user, folder_name: 'root')
-
-			if share && share.varify == varify
-				new_folders_with_attachments = get_folders_with_attachments user, share, root
-				# p new_folders_with_attachments
-				new_attachments = get_top_attachments share, root
-
-				folders = nil
-				attachments = nil
-				transaction do
-					folders = Folder.create!(new_folders_with_attachments)
-					attachments = Attachment.create!(new_attachments)
-				end
-
-				folders = folders.map do |folder|
-          {
-            id: folder[:id],
-            type: 'folder',
-            name: folder[:folder_name],
-            numbering: folder[:numbering],
-            ancestry: folder[:ancestry],
-            children: []
-          }
-				end
-				# p Attachment.where(folder_id: folders.map{ |folder| folder[:id] })
-				attachments = attachments
-					.concat(Attachment.where(folder_id: folders.map{ |folder| folder[:id] }))
-					.map do |attachment|
-						{
-							id: attachment[:id],
-							folder_id: attachment[:folder_id],
-							type: attachment[:file_type],
-							name: attachment[:file_name],
-							b2_key: attachment[:b2_key],
-							size: attachment[:byte_size]
-						}
-					end
-
-				return [folders, attachments]
-			end
-		rescue => e
-			Share.models_logger.error e.message
-			p "错误", e.message
-			p "错误", e.backtrace
-			return e
-		end
-	end
-
-=======
-	end
-
-	#接收文件
-	def self.accept_from_others(user_id, link, varify)
-		begin
-			share = Share.find_by!(link: link)
-			root = Folder.find_by!(user: user_id, folder_name: 'root')
-
-			if share && share.varify == varify
-				new_folders_with_attachments = get_folders_with_attachments user_id, share, root
-				# p new_folders_with_attachments
-				new_attachments = get_top_attachments share, root
-
-				folders = nil
-				attachments = nil
-				transaction do
-					folders = Folder.create!(new_folders_with_attachments)
-					attachments = Attachment.create!(new_attachments)
-				end
-
-				folders = folders.map do |folder|
-          {
-            id: folder[:id],
-            type: 'folder',
-            name: folder[:folder_name],
-            numbering: folder[:numbering],
-            ancestry: folder[:ancestry],
-            children: []
-          }
-				end
-				# p Attachment.where(folder_id: folders.map{ |folder| folder[:id] })
-				attachments = attachments
-					.concat(Attachment.where(folder_id: folders.map{ |folder| folder[:id] }))
-					.map do |attachment|
-						{
-							id: attachment[:id],
-							folder_id: attachment[:folder_id],
-							type: attachment[:file_type],
-							name: attachment[:file_name],
-							b2_key: attachment[:b2_key],
-							size: attachment[:byte_size]
-						}
-					end
-
-				return [folders, attachments]
-			end
-		rescue => e
-			Share.models_logger.error e.message
-			p "错误", e.message
-			p "错误", e.backtrace
-			return e
-		end
 	end
 
 >>>>>>> 添加回收站功能
@@ -223,18 +114,8 @@ class Share < ApplicationRecord
   end
 
   #获取当前分享
-<<<<<<< HEAD
-<<<<<<< HEAD
-  def self.get_shares user
-		shares = user.shares
-=======
   def self.get_shares user_id
 		shares = Share.where(user: user_id)
->>>>>>> 添加回收站功能
-=======
-  def self.get_shares user_id
-		shares = Share.where(user: user_id)
->>>>>>> 添加回收站功能
 		shared_attachments = []
 
 		shares.each do |share|
@@ -254,15 +135,7 @@ class Share < ApplicationRecord
 			self.expires_at = 7.days.from_now
 		end
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-		def self.get_folders_with_attachments user, share, root
-=======
 		def self.get_folders_with_attachments user_id, share, root
->>>>>>> 添加回收站功能
-=======
-		def self.get_folders_with_attachments user_id, share, root
->>>>>>> 添加回收站功能
 			Folder.joins(:attachments, :shares)
 				.select("jsonb_build_object(
 						'folder_name', folders.folder_name,
@@ -281,15 +154,7 @@ class Share < ApplicationRecord
 				.group("folders.id, folders_shares.top")
 				.map do |folder|
 					{
-<<<<<<< HEAD
-<<<<<<< HEAD
-						user_id: user.id,
-=======
 						user_id: user_id,
->>>>>>> 添加回收站功能
-=======
-						user_id: user_id,
->>>>>>> 添加回收站功能
 						folder_name: folder.result["folder_name"],
 						numbering: folder.result["numbering"],
 						ancestry: folder.result["top"] == true ? root.numbering : folder.result["ancestry"] ,

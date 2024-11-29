@@ -77,31 +77,6 @@ class Attachment < ApplicationRecord
   end
 
   #删除文件
-<<<<<<< HEAD
-<<<<<<< HEAD
-  def self.update_of_destroy_for_database folder_ids, attachement_ids
-    begin
-      if folder_ids.any? || attachement_ids.any?
-
-        RemoveAttachmentAndFolderJob.perform_later(folder_ids, attachement_ids)
-      end
-=======
-  # def self.update_of_destroy_for_database folder_ids, attachement_ids
-  #   begin
-  #     if folder_ids.any? || attachement_ids.any?
-
-  #       RemoveAttachmentAndFolderJob.perform_later(folder_ids, attachement_ids)
-  #     end
->>>>>>> 添加回收站功能
-
-  #     return true
-  #   rescue => e
-  #     Attachment.models_logger.error e.message
-
-  #     return e
-  #   end
-
-=======
   # def self.update_of_destroy_for_database folder_ids, attachement_ids
   #   begin
   #     if folder_ids.any? || attachement_ids.any?
@@ -116,7 +91,6 @@ class Attachment < ApplicationRecord
   #     return e
   #   end
 
->>>>>>> 添加回收站功能
   # end
 
 	# 获取文件

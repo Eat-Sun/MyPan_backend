@@ -31,21 +31,9 @@ module Api
 					end
 				end
 				post 'mover' do
-<<<<<<< HEAD
-<<<<<<< HEAD
-					user = User.get_user params[:token]
-
-					if user
-=======
 					user_id = User.get_user params[:token]
 
 					if user_id
->>>>>>> 添加回收站功能
-=======
-					user_id = User.get_user params[:token]
-
-					if user_id
->>>>>>> 添加回收站功能
 						folder_ids = []
 						attachment_ids = []
 						# p "params[:data][:filelist]",params[:data][:filelist]
@@ -53,18 +41,8 @@ module Api
 							target_folder = Folder.find(params[:data][:target_folder_id])
 							classify params[:data][:filelist], folder_ids, attachment_ids
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-							attachment_response = Attachment.move_attachments user, attachment_ids, target_folder
-							folder_response = Folder.move_folders user, folder_ids, target_folder
-=======
 							attachment_response = Attachment.move_attachments attachment_ids, target_folder
 							folder_response = Folder.move_folders folder_ids, target_folder
->>>>>>> 添加回收站功能
-=======
-							attachment_response = Attachment.move_attachments attachment_ids, target_folder
-							folder_response = Folder.move_folders folder_ids, target_folder
->>>>>>> 添加回收站功能
 
 							if attachment_response && folder_response
 								build_response(code: 1, message: "移动成功")

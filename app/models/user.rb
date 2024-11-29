@@ -1,13 +1,5 @@
 class User < ApplicationRecord
-<<<<<<< HEAD
-<<<<<<< HEAD
-  include Skylight::Helpers
-=======
   # include Skylight::Helpers
->>>>>>> 添加回收站功能
-=======
-  # include Skylight::Helpers
->>>>>>> 添加回收站功能
   authenticates_with_sorcery!
 
   attr_accessor :password, :password_confirmation
@@ -52,42 +44,19 @@ class User < ApplicationRecord
     end
   end
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-  instrument_method title: 'get_user'
-=======
->>>>>>> 添加回收站功能
-=======
->>>>>>> 添加回收站功能
   def self.get_user token
     user_id = Rails.cache.read token
 
     if user_id
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-      return User.find(user_id)
-=======
       return user_id
->>>>>>> 添加回收站功能
-=======
-      return user_id
->>>>>>> 添加回收站功能
     else
       decoded_token = OperateToken.decode_token token
 
       if decoded_token
         payload = decoded_token[0]
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-        return User.find(payload["user_id"])
-=======
         return payload["user_id"]
->>>>>>> 添加回收站功能
-=======
-        return payload["user_id"]
->>>>>>> 添加回收站功能
       else
 
         return nil

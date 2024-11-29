@@ -1,27 +1,11 @@
 class Folder < ApplicationRecord
 	include ActsAsTree
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
->>>>>>> 添加回收站功能
-=======
->>>>>>> 添加回收站功能
 	extend FolderProcess::ProcessData
 
 	belongs_to :user
   has_many :attachments, dependent: :destroy_async
 	has_many :folders_shares, class_name: "FolderShare", dependent: :delete_all
   has_many :shares, through: :folders_shares
-<<<<<<< HEAD
-<<<<<<< HEAD
-	# has_ancestry orphan_strategy: :destroy
-	acts_as_tree primary_key: 'numbering', foreign_key: 'ancestry'
-
-	#创建文件夹
-	def self.create_folder user, parent_folder_numbering, new_folder_name
-		parent_folder = user.folders.find_by!(numbering: parent_folder_numbering)
-=======
 
 	scope :in_bins, -> { where(:in_bins => true).pluck(:id) }
 
@@ -30,33 +14,12 @@ class Folder < ApplicationRecord
 	#创建文件夹
 	def self.create_folder user_id, parent_folder_numbering, new_folder_name
 		parent_folder = Folder.find_by!(user: user_id, numbering: parent_folder_numbering)
->>>>>>> 添加回收站功能
-=======
-
-	scope :in_bins, -> { where(:in_bins => true).pluck(:id) }
-
-	acts_as_tree primary_key: 'numbering', foreign_key: 'ancestry'
-
-	#创建文件夹
-	def self.create_folder user_id, parent_folder_numbering, new_folder_name
-		parent_folder = Folder.find_by!(user: user_id, numbering: parent_folder_numbering)
->>>>>>> 添加回收站功能
 
 	  return false unless parent_folder
 
     begin
-<<<<<<< HEAD
-<<<<<<< HEAD
-			numbering = generate_numbering user
-      new_children_folder = parent_folder.children.create!(user: user, folder_name: new_folder_name, numbering: numbering)
-=======
 			numbering = generate_numbering user_id
       new_children_folder = parent_folder.children.create!(user: user_id, folder_name: new_folder_name, numbering: numbering)
->>>>>>> 添加回收站功能
-=======
-			numbering = generate_numbering user_id
-      new_children_folder = parent_folder.children.create!(user: user_id, folder_name: new_folder_name, numbering: numbering)
->>>>>>> 添加回收站功能
     	if new_children_folder.persisted?
 				result = {
 					id: new_children_folder.id,
@@ -121,18 +84,8 @@ class Folder < ApplicationRecord
 	end
 
 	private
-<<<<<<< HEAD
-<<<<<<< HEAD
-		def self.generate_numbering user
-			user.id.to_s << '_' << SecureRandom.alphanumeric(4).to_s
-=======
 		def self.generate_numbering user_id
 			user_id.to_s << '_' << SecureRandom.alphanumeric(4).to_s
->>>>>>> 添加回收站功能
-=======
-		def self.generate_numbering user_id
-			user_id.to_s << '_' << SecureRandom.alphanumeric(4).to_s
->>>>>>> 添加回收站功能
 		end
 		# def self.set_subtree folders, attachments
 		# 	begin

@@ -10,14 +10,7 @@ root1:
   numbering: 1_niqw
   ancestry: null
   user_id: 1
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   in_bins: false
->>>>>>> 添加回收站功能
-=======
-  in_bins: false
->>>>>>> 添加回收站功能
 
 Folder1_1:
   id: 11
@@ -92,16 +85,6 @@ root2:
   ancestry: null
   user_id: 2
   in_bins: false
-<<<<<<< HEAD
-
-root2:
-  id: 2
-  folder_name: root
-  numbering: 2_dqfq
-  ancestry: null
-  user_id: 2
-=======
->>>>>>> 添加回收站功能
 
 Folder2_1:
   id: 21
@@ -148,12 +131,6 @@ Folder2_2_sub2:
   folder_name: Folder2_2_sub2
   numbering: 2_tyih
   ancestry: 2_qtdk
-<<<<<<< HEAD
-<<<<<<< HEAD
-  user_id: 2
-=======
-=======
->>>>>>> 添加回收站功能
   user_id: 2
   in_bins: false
 
@@ -174,7 +151,3 @@ Recycled2_3_1:
   ancestry: 2_kcvz
   user_id: 2
   in_bins: false
-<<<<<<< HEAD
->>>>>>> 添加回收站功能
-=======
->>>>>>> 添加回收站功能
