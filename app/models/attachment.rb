@@ -1,7 +1,8 @@
 class Attachment < ApplicationRecord
 	belongs_to :folder
   belongs_to :file_monitor, optional: true
-  has_and_belongs_to_many :shares
+  has_many :attachments_shares, class_name: "AttachmentShare", dependent: :delete_all
+  has_many :shares, through: :attachments_shares
 
   after_create :plus_file_monitor
   after_destroy :minus_file_monitor
@@ -12,6 +13,8 @@ class Attachment < ApplicationRecord
 	scope :audios, -> { where(:file_type => 'audio')}
 	scope :undefined, -> { where(:file_type => 'undefined')}
 
+	scope :in_bins, -> { where(:in_bins => true).pluck(:id) }
+
 	module Initial
 		BucketName = { My_Pan: 'My-Pan'}
 	end
@@ -21,11 +24,10 @@ class Attachment < ApplicationRecord
     retries = 0
     begin
       attachment = nil
-
       transaction do
         result = User.update_used_space user_id, file_size
-
         attachment = parent_folder.attachments.create!(file_name: file_name, file_type: file_type, b2_key: b2_key, byte_size: file_size) if result
+
       end
 
       if attachment
@@ -39,9 +41,9 @@ class Attachment < ApplicationRecord
       end
       return false
     rescue => e
-      if retries < 3
+      if retries < 4
         retries += 1
-        sleep 1
+        sleep 2
 
         retry
       else
@@ -53,12 +55,12 @@ class Attachment < ApplicationRecord
 	end
 
   #下载文件
-  def self.download_from_blackblaze b2_keys
+  def self.download_from_blackblaze key_and_names
     begin
       presigned_urls = []
 
-      b2_keys.each do |b2_key|
-        obj = S3_Resource.bucket(Conf::BUCKETNAME[:My_Pan]).object(b2_key)
+      key_and_names.each do |item|
+        obj = S3_Resource.bucket(Conf::BUCKETNAME[:My_Pan]).object(item[:key])
         if obj.exists?
           presigned_url = obj.presigned_url(:get, expires_in: 172800)
           presigned_urls << presigned_url
@@ -75,38 +77,85 @@ class Attachment < ApplicationRecord
   end
 
   #删除文件
-  def self.update_of_destroy_for_database user, data
-    folder_items_id = []
-    attachment_items_id = []
-    classify data, folder_items_id, attachment_items_id
-    # p "folder_items_id:", folder_items_id
-    # p "attachment_items_id:", attachment_items_id
+<<<<<<< HEAD
+<<<<<<< HEAD
+  def self.update_of_destroy_for_database folder_ids, attachement_ids
     begin
-      if folder_items_id.any? || attachment_items_id.any?
+      if folder_ids.any? || attachement_ids.any?
 
-        RemoveAttachmentAndFolderJob.perform_later(folder_items_id, attachment_items_id)
+        RemoveAttachmentAndFolderJob.perform_later(folder_ids, attachement_ids)
       end
+=======
+  # def self.update_of_destroy_for_database folder_ids, attachement_ids
+  #   begin
+  #     if folder_ids.any? || attachement_ids.any?
 
-      return true
-    rescue => e
-      Attachment.models_logger.error e.message
+  #       RemoveAttachmentAndFolderJob.perform_later(folder_ids, attachement_ids)
+  #     end
+>>>>>>> 添加回收站功能
 
-      return e
-    end
+  #     return true
+  #   rescue => e
+  #     Attachment.models_logger.error e.message
 
-  end
+  #     return e
+  #   end
+
+=======
+  # def self.update_of_destroy_for_database folder_ids, attachement_ids
+  #   begin
+  #     if folder_ids.any? || attachement_ids.any?
+
+  #       RemoveAttachmentAndFolderJob.perform_later(folder_ids, attachement_ids)
+  #     end
+
+  #     return true
+  #   rescue => e
+  #     Attachment.models_logger.error e.message
+
+  #     return e
+  #   end
+
+>>>>>>> 添加回收站功能
+  # end
 
 	# 获取文件
   def self.get_filelist_from_backblaze user
-    arranged_data = Folder.includes(:attachments).find_by(user: user, folder_name: "root").subtree.arrange
+    begin
+      folders = Folder.where(user: user)
+        .pluck("id, folder_name, numbering, ancestry")
+        .map do |folder|
+          {
+            id: folder[0],
+            type: 'folder',
+            name: folder[1],
+            numbering: folder[2],
+            ancestry: folder[3],
+            children: []
+          }
+        end
+      attachments = Attachment.where(folder_id: folders.map { |folder| folder[:id] })
+        .pluck("id, folder_id, file_type, file_name, b2_key, byte_size, file_monitor_id")
+        .map do |attachment|
+          {
+            id: attachment[0],
+            folder_id: attachment[1],
+            type: attachment[2],
+            name: attachment[3],
+            b2_key: attachment[4],
+            size: attachment[5]
+          }
+        end
 
-    form_data = process_data arranged_data
-    # p form_data
-    return form_data
+      return [folders, attachments]
+    rescue => e
+
+      return e
+    end
   end
 
   # 移动文件
-  def self.move_attachments user, attachment_items_id, target_folder
+  def self.move_attachments attachment_items_id, target_folder
     return true if attachment_items_id.blank?
 
     attachments = Attachment.where(id: attachment_items_id)
@@ -123,76 +172,82 @@ class Attachment < ApplicationRecord
     rescue => e
       Attachment.models_logger.error e.message
       p "出错：", e.message
-      raise e
+      return e
     end
   end
 
   private
     def plus_file_monitor
+      redis = Attachment.redis
+      Rails.cache.fetch("update_filemonitor") { {} }
+
       begin
-        file_monitor = FileMonitor.find_by(b2_key: self.b2_key)
-
-        if file_monitor
-          file_monitor.lock!
-
-          file_monitor.increment!(:owner_count)
-        else
-
-          FileMonitor.create!(owner_count: 1, attachments: [self])
+        key = self.b2_key
+        unless redis.hexists("update_filemonitor", key)
+          redis.hset("update_filemonitor", key, Marshal.dump([]))
         end
-      rescue => e
-        Attachment.models_logger.error e.message
 
-        return e
+        value = Marshal.load(redis.hget("update_filemonitor", key))
+        redis.hset("update_filemonitor", key, Marshal.dump(value << 1))
+      rescue => e
+
+        raise e
       end
     end
 
     def minus_file_monitor
-      begin
-        FileMonitor.where(b2_key: self.b2_key).update_counters(owner_count: -1)
+      redis = Attachment.redis
+      unless Rails.cache.read "update_filemonitor"
+        Rails.cache.write("update_filemonitor", {})
+      end
 
-        FileMonitor.need_to_destroy
+      begin
+        key = self.b2_key
+        unless redis.hexists("update_filemonitor", key)
+          redis.hset("update_filemonitor", key, [])
+        end
+
+        value = redis.hget("update_filemonitor", key)
+        redis.hset("update_filemonitor", key, value << -1)
       rescue => e
-        Attachment.models_logger.error e.message
 
         return e
       end
-
     end
 
-    def self.process_data arranged_data
-      arranged_data.map do |folder, children|
+    # def self.process_data arranged_data
+    #   arranged_data.map do |folder, children|
 
-        {
-          id: folder.id,
-          type: "folder",
-          name: folder.folder_name,
-          children: process_data(children) + attached_files_info(folder.attachments)
-        }
+    #     {
+    #       id: folder.id,
+    #       type: "folder",
+    #       name: folder.folder_name,
+    #       children: process_data(children) + attached_files_info(folder.attachments)
+    #     }
 
-      end
-    end
+    #   end
+    # end
 
-    def self.attached_files_info(filelist)
-      filelist.map do |file|
-        {
-          id: file.id,
-          type: file.file_type,
-          name: file.file_name,
-          b2_key: file.b2_key,
-          size: file.byte_size
-        }
-      end
-    end
+    # def self.attached_files_info(filelist)
+    #   filelist.map do |file|
+    #     {
+    #       id: file.id,
+    #       type: file.file_type,
+    #       name: file.file_name,
+    #       b2_key: file.b2_key,
+    #       size: file.byte_size
+    #     }
+    #   end
+    # end
 
-    def self.classify data, folder_items_id, attachment_items_id
-      data.each do |item|
-        if item[:type] == 'folder'
-          folder_items_id << item["id"]
-          classify item["children"], folder_items_id, attachment_items_id
-        else
-          attachment_items_id << item["id"]
-        end
-      end
-    end
+    # def self.classify data, folder_items_id, attachment_items_id
+    #   data.each do |item|
+    #     if item[:type] == 'folder'
+    #       folder_items_id << item["id"]
+    #       classify item["children"], folder_items_id, attachment_items_id
+    #     else
+    #       attachment_items_id << item["id"]
+    #     end
+    #   end
+    # end
 end

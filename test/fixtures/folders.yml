@@ -7,83 +7,174 @@
 root1:
   id: 1
   folder_name: root
+  numbering: 1_niqw
   ancestry: null
   user_id: 1
-
-root2:
-  id: 2
-  folder_name: root
-  ancestry: null
-  user_id: 2
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+  in_bins: false
+>>>>>>> 添加回收站功能
+=======
+  in_bins: false
+>>>>>>> 添加回收站功能
 
 Folder1_1:
   id: 11
   folder_name: Folder1_1
-  ancestry: 1
+  numbering: 1_brni
+  ancestry: 1_niqw
   user_id: 1
+  in_bins: true
 
 Folder1_2:
   id: 12
   folder_name: Folder1_2
-  ancestry: 1
+  numbering: 1_slfw
+  ancestry: 1_niqw
   user_id: 1
+  in_bins: false
 
 Folder1_1_sub1:
   id: 111
   folder_name: Folder1_1_sub1
-  ancestry: 1/11
+  numbering: 1_yptc
+  ancestry: 1_brni
   user_id: 1
+  in_bins: true
 
 Folder1_1_sub2:
   id: 112
   folder_name: Folder1_1_sub2
-  ancestry: 1/11
+  numbering: 1_rwvh
+  ancestry: 1_brni
   user_id: 1
+  in_bins: true
 
 Folder1_2_sub1:
   id: 121
   folder_name: Folder1_2_sub1
-  ancestry: 1/12
+  numbering: 1_gitm
+  ancestry: 1_slfw
   user_id: 1
+  in_bins: false
 
 Folder1_2_sub2:
   id: 122
   folder_name: Folder1_2_sub2
-  ancestry: 1/12
+  numbering: 1_porc
+  ancestry: 1_slfw
   user_id: 1
+  in_bins: false
+
+Recycled1_3:
+  id: 13
+  in_bins: true
+  folder_name: Recycled1_3
+  numbering: 1_hgux
+  ancestry: 1_niqw
+  user_id: 1
+  in_bins: true
+
+Recycled1_3_1:
+  id: 131
+  in_bins: true
+  folder_name: Recycled1_3_1
+  numbering: 1_tmaq
+  ancestry: 1_hgux
+  user_id: 1
+  in_bins: true
+
+root2:
+  id: 2
+  folder_name: root
+  numbering: 2_dqfq
+  ancestry: null
+  user_id: 2
+  in_bins: false
+<<<<<<< HEAD
+
+root2:
+  id: 2
+  folder_name: root
+  numbering: 2_dqfq
+  ancestry: null
+  user_id: 2
+=======
+>>>>>>> 添加回收站功能
 
 Folder2_1:
   id: 21
   folder_name: Folder2_1
-  ancestry: 2
+  numbering: 2_vytm
+  ancestry: 2_dqfq
   user_id: 2
+  in_bins: false
 
 Folder2_2:
   id: 22
   folder_name: Folder2_2
-  ancestry: 2
+  numbering: 2_qtdk
+  ancestry: 2_dqfq
   user_id: 2
+  in_bins: false
 
 Folder2_1_sub1:
   id: 211
   folder_name: Folder2_1_sub1
-  ancestry: 2/21
+  numbering: 2_jklu
+  ancestry: 2_vytm
   user_id: 2
+  in_bins: false
 
 Folder2_1_sub2:
   id: 212
   folder_name: Folder2_1_sub2
-  ancestry: 2/21
+  numbering: 2_rbny
+  ancestry: 2_vytm
   user_id: 2
+  in_bins: false
 
 Folder2_2_sub1:
   id: 221
   folder_name: Folder2_2_sub1
-  ancestry: 2/22
+  numbering: 2_mnvb
+  ancestry: 2_qtdk
   user_id: 2
+  in_bins: false
 
 Folder2_2_sub2:
   id: 222
   folder_name: Folder2_2_sub2
-  ancestry: 2/22
+  numbering: 2_tyih
+  ancestry: 2_qtdk
+<<<<<<< HEAD
+<<<<<<< HEAD
   user_id: 2
+=======
+=======
+>>>>>>> 添加回收站功能
+  user_id: 2
+  in_bins: false
+
+Recycled2_3:
+  id: 23
+  in_bins: true
+  folder_name: Recycled2_3
+  numbering: 2_kcvz
+  ancestry: 2_dqfq
+  user_id: 2
+  in_bins: false
+
+Recycled2_3_1:
+  id: 231
+  in_bins: true
+  folder_name: Recycled2_3_1
+  numbering: 2_cyra
+  ancestry: 2_kcvz
+  user_id: 2
+  in_bins: false
+<<<<<<< HEAD
+>>>>>>> 添加回收站功能
+=======
+>>>>>>> 添加回收站功能

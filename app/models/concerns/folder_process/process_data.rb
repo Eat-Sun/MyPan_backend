@@ -1,16 +1,16 @@
 module FolderProcess
   module ProcessData
 
-    def process_data arranged_data
-      arranged_data.map do |folder, children|
-        {
-          id: folder.id,
-          type: "folder",
-          name: folder.folder_name,
-          children: process_data(children) + attached_files_info(folder.attachments)
-        }
-      end
-    end
+    # def process_data arranged_data
+    #   arranged_data.map do |folder, children|
+    #     {
+    #       id: folder.id,
+    #       type: "folder",
+    #       name: folder.folder_name,
+    #       children: process_data(children) + attached_files_info(folder.attachments)
+    #     }
+    #   end
+    # end
 
     def attached_files_info(filelist)
       filelist.map do |file|
@@ -23,5 +23,6 @@ module FolderProcess
         }
       end
     end
+
   end
 end

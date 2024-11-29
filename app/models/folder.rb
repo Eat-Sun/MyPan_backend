@@ -1,26 +1,70 @@
 class Folder < ApplicationRecord
+	include ActsAsTree
+<<<<<<< HEAD
+<<<<<<< HEAD
+
+=======
+>>>>>>> 添加回收站功能
+=======
+>>>>>>> 添加回收站功能
 	extend FolderProcess::ProcessData
 
 	belongs_to :user
   has_many :attachments, dependent: :destroy_async
-  has_and_belongs_to_many :shares
-	has_ancestry orphan_strategy: :destroy
+	has_many :folders_shares, class_name: "FolderShare", dependent: :delete_all
+  has_many :shares, through: :folders_shares
+<<<<<<< HEAD
+<<<<<<< HEAD
+	# has_ancestry orphan_strategy: :destroy
+	acts_as_tree primary_key: 'numbering', foreign_key: 'ancestry'
 
 	#创建文件夹
-	def self.create_folder user, parent_folder_id, new_folder
-		parent_folder = user.folders.find(parent_folder_id)
+	def self.create_folder user, parent_folder_numbering, new_folder_name
+		parent_folder = user.folders.find_by!(numbering: parent_folder_numbering)
+=======
+
+	scope :in_bins, -> { where(:in_bins => true).pluck(:id) }
+
+	acts_as_tree primary_key: 'numbering', foreign_key: 'ancestry'
+
+	#创建文件夹
+	def self.create_folder user_id, parent_folder_numbering, new_folder_name
+		parent_folder = Folder.find_by!(user: user_id, numbering: parent_folder_numbering)
+>>>>>>> 添加回收站功能
+=======
+
+	scope :in_bins, -> { where(:in_bins => true).pluck(:id) }
+
+	acts_as_tree primary_key: 'numbering', foreign_key: 'ancestry'
+
+	#创建文件夹
+	def self.create_folder user_id, parent_folder_numbering, new_folder_name
+		parent_folder = Folder.find_by!(user: user_id, numbering: parent_folder_numbering)
+>>>>>>> 添加回收站功能
 
 	  return false unless parent_folder
 
     begin
-      new_children_folder = parent_folder.children.create(folder_name: new_folder, user: user)
+<<<<<<< HEAD
+<<<<<<< HEAD
+			numbering = generate_numbering user
+      new_children_folder = parent_folder.children.create!(user: user, folder_name: new_folder_name, numbering: numbering)
+=======
+			numbering = generate_numbering user_id
+      new_children_folder = parent_folder.children.create!(user: user_id, folder_name: new_folder_name, numbering: numbering)
+>>>>>>> 添加回收站功能
+=======
+			numbering = generate_numbering user_id
+      new_children_folder = parent_folder.children.create!(user: user_id, folder_name: new_folder_name, numbering: numbering)
+>>>>>>> 添加回收站功能
     	if new_children_folder.persisted?
-				# new_children_folder.create_file_monitor!(owner_count: 1)
 				result = {
 					id: new_children_folder.id,
 					type: "folder",
 					name: new_children_folder.folder_name,
-					children:[]
+					numbering: new_children_folder.numbering,
+					ancestry: new_children_folder.ancestry,
+					children: []
 				}
 
     		return result
@@ -33,34 +77,6 @@ class Folder < ApplicationRecord
 
     	return e
     end
-	end
-
-	#处理分享文件夹
-	def self.operate_share user, folders, attachments
-		root = Folder.find_by(user: user, ancestry: nil)
-
-		begin
-			subtrees, top_attachments = set_subtree folders, attachments
-			new_attachments = top_attachments.map do |top_attachment|
-				{
-					file_name: top_attachment.file_name,
-					file_type: top_attachment.file_type,
-					b2_key: top_attachment.b2_key,
-					byte_size: top_attachment.byte_size
-				}
-			end
-
-			# 处理顶层文件
-			new = root.attachments.create(new_attachments)
-			# 处理顶层文件夹
-			processed = search_subtrees subtrees, root, user, attachments
-			processed[0].concat(attached_files_info(new))
-
-			return processed[0]
-		rescue => e
-			p "错误：", e.message
-		end
-
 	end
 
 	#删除文件夹
@@ -83,7 +99,7 @@ class Folder < ApplicationRecord
 	end
 
 	#移动文件夹
-	def self.move_folders user, folder_items_id, target_folder
+	def self.move_folders folder_items_id, target_folder
 		return true if folder_items_id.blank?
 
     folders = Folder.where(id: folder_items_id)
@@ -105,68 +121,78 @@ class Folder < ApplicationRecord
 	end
 
 	private
-		def self.set_subtree folders, attachments
-			begin
-				top_folders = nil
-				top_attachments = nil
-
-				if folders.present?
-					min_length = folders.min_by { |folder| folder.ancestry.length }.ancestry.length
-					folder_attachments = []
-					folders.each do |item|
-						folder_attachments.concat(item.attachments)
-					end
-
-					top_folders = folders.select { |folder| folder.ancestry.length == min_length }
-					(top_attachments = folder_attachments.present? ? attachments - folder_attachments : attachments) if attachments
-				end
-
-				tree = top_folders.map { |folder| folder.subtree.arrange }
-
-				return [tree, top_attachments]
-			rescue => e
-				p "set_subtree", e.message
-			end
+<<<<<<< HEAD
+<<<<<<< HEAD
+		def self.generate_numbering user
+			user.id.to_s << '_' << SecureRandom.alphanumeric(4).to_s
+=======
+		def self.generate_numbering user_id
+			user_id.to_s << '_' << SecureRandom.alphanumeric(4).to_s
+>>>>>>> 添加回收站功能
+=======
+		def self.generate_numbering user_id
+			user_id.to_s << '_' << SecureRandom.alphanumeric(4).to_s
+>>>>>>> 添加回收站功能
 		end
+		# def self.set_subtree folders, attachments
+		# 	begin
+		# 		tree = []
+		# 		folder_attachments = []
 
-		def self.search_subtrees subtrees, parent, user, attachments
-			# p "subtree", subtrees
-			operated = subtrees.map do |subtree|
+		# 		if folders.present?
+		# 			min_length = folders.min_by { |folder| folder.ancestry.length }.ancestry.length
+		# 			folders.each do |item|
+		# 				folder_attachments.concat(item.attachments)
+		# 			end
 
-				operate_tree subtree, parent, user, attachments
-			end
+		# 			top_folders = folders.select { |folder| folder.ancestry.length == min_length }
+		# 			tree = top_folders.map { |folder| folder.subtree.arrange }
+		# 		end
+		# 		top_attachments = attachments - folder_attachments
 
-			return operated
-		end
+		# 		return [tree, top_attachments]
+		# 	rescue => e
+		# 		p "set_subtree", e.message
+		# 	end
+		# end
 
-		def self.operate_tree subtree, parent, user, attachments
-			begin
-				result = subtree.map do |folder, children|
-					# 创建新的文件夹和文件
-					new_folder = parent.children.create!(folder_name: folder.folder_name, user: user)
-					target_attachments = folder.attachments & attachments
-					new_attachments = target_attachments.map do |new_attachment|
-						{
-							file_name: new_attachment.file_name,
-							file_type: new_attachment.file_type,
-							b2_key: new_attachment.b2_key,
-							byte_size: new_attachment.byte_size
-						}
-					end
+		# def self.search_subtrees subtrees, parent, user, attachments
+		# 	operated = subtrees.map do |subtree|
 
-					attachments -= target_attachments
-					new_files = new_folder.attachments.create(new_attachments)
-					{
-						id: new_folder.id,
-						type: "folder",
-						name: new_folder.folder_name,
-						children: operate_tree(children, new_folder, user, attachments) + attached_files_info(new_files)
-					}
-				end
+		# 		operate_tree subtree, parent, user, attachments
+		# 	end
 
-				return result
-			rescue => e
-				p "operate_tree", e.message
-			end
-		end
+		# 	return operated
+		# end
+
+		# def self.operate_tree subtree, parent, user, attachments
+		# 	begin
+		# 		result = subtree.map do |folder, children|
+		# 			# 创建新的文件夹和文件
+		# 			new_folder = parent.children.create!(folder_name: folder.folder_name, user: user)
+		# 			target_attachments = folder.attachments & attachments
+		# 			new_attachments = target_attachments.map do |new_attachment|
+		# 				{
+		# 					file_name: new_attachment.file_name,
+		# 					file_type: new_attachment.file_type,
+		# 					b2_key: new_attachment.b2_key,
+		# 					byte_size: new_attachment.byte_size
+		# 				}
+		# 			end
+
+		# 			attachments -= target_attachments
+		# 			new_files = new_folder.attachments.create(new_attachments)
+		# 			{
+		# 				id: new_folder.id,
+		# 				type: "folder",
+		# 				name: new_folder.folder_name,
+		# 				children: operate_tree(children, new_folder, user, attachments) + attached_files_info(new_files)
+		# 			}
+		# 		end
+
+		# 		return result
+		# 	rescue => e
+		# 		p "operate_tree", e.message
+		# 	end
+		# end
 end

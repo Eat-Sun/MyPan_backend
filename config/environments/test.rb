@@ -26,7 +26,16 @@ Rails.application.configure do
   # Show full error reports and disable caching.
   config.consider_all_requests_local = true
   config.action_controller.perform_caching = false
-  config.cache_store = :null_store
+  config.cache_store = :redis_cache_store, {
+    url: ENV['REDIS_URL'] || 'redis://localhost:6379/2',
+    namespace: 'cache',
+    expires_in: 1.day, # 设置缓存的过期时间
+    reconnect_attempts: 1, # 重新连接的尝试次数
+    error_handler: -> (method:, returning:, exception:) {
+      # 处理连接错误的逻辑
+      Rails.logger.error "Redis error: #{exception.message}"
+    }
+  }
 
   # Render exception templates for rescuable exceptions and raise for other exceptions.
   config.action_dispatch.show_exceptions = :rescuable

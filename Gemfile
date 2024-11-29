@@ -20,8 +20,6 @@ gem "grape-swagger-rails"
 
 gem "grape_on_rails_routes"
 
-gem "will_paginate"
-
 gem "execjs"
 
 gem "sorcery"
@@ -30,20 +28,25 @@ gem 'ancestry'
 
 gem 'rest-client'
 
-gem 'streamio-ffmpeg'
-
 gem 'jwt'
 
 gem 'aws-sdk-s3'
 
 gem 'sidekiq'
 
-gem 'connection_pool'
+gem 'sidekiq-cron'
 
 gem 'rackup'
 
 gem 'rack'
 
+gem 'nokogiri'
+
+gem 'rexml'
+
+gem "skylight"
+
+gem 'acts_as_tree'
 
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"

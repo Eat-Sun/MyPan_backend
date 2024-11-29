@@ -6,7 +6,6 @@ module Api
 			helpers do
         def user_params
         	params[:user]&.slice(:username, :email, :password, :password_confirmation) if params[ :user]
-
         end
 		  end
 

@@ -3,8 +3,12 @@ module Api
 		module Common
 			extend ActiveSupport::Concern
 
+
 			included do
+
 				helpers do
+					include Skylight::Helpers
+
 					#api返回给前端的数据格式应该保持一致
 					def build_response code: nil, data: nil, message: nil, exception: nil
 						{
@@ -29,25 +33,22 @@ module Api
 
 					end
 
-					def get_user token
-						decoded_token = OperateToken.decode_token token
-						if decoded_token
-							payload = decoded_token[0]
-							return User.find(payload["user_id"])
-						else
-							return nil
-						end
-					end
-
-					def classify data, folder_items_id, attachment_items_id
+					def classify data, folder_ids, attachment_ids
 						data.each do |item|
-							if item[:type] == 'folder'
-								folder_items_id << item["id"]
-								classify item["children"], folder_items_id, attachment_items_id
+							if item['type'] == 'folder'
+								folder_ids << item['id']
 							else
-								attachment_items_id << item["id"]
+								attachment_ids << item['id']
 							end
 						end
+						# data.each do |item|
+						# 	if item[:type] == 'folder'
+						# 		folder_ids << item["id"]
+						# 		classify item["children"], folder_ids, attachment_ids
+						# 	else
+						# 		attachment_ids << item["id"]
+						# 	end
+						# end
 					end
 
 					#定义了params中可选用的方法，这里定义了validation
@@ -55,6 +56,7 @@ module Api
 						requires :token, type: { value: String, message: "该操作需要提供token"}
 					end
 
+					instrument_method :classify
 				end
 			end
 

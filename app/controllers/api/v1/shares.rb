@@ -8,34 +8,50 @@ module Api
 				params do
 					use :token_validater
 					requires :data, type: { value: Array, message: "文件不能为空"}
-					requires :varify, type: { value: String, message: "验证码不能为空"}
+					requires :top, type: Array
+					requires :varify, type: { value: Integer, message: "验证码不能为空"}
 				end
 				post 'new' do
-					# puts params[:data]
-					folder_items_id = []
-					attachment_items_id = []
-					user = get_user params[:token]
+					folder_opts = []
+					attachment_opts = []
+<<<<<<< HEAD
+<<<<<<< HEAD
+					user = User.get_user params[:token]
+					top = params[:top].to_set
 
+					share = Share.create!(user: user, link: params[:link], varify: params[:varify])
+=======
+					user_id = User.get_user params[:token]
+					top = params[:top].to_set
+
+					share = Share.create!(user: user_id, link: params[:link], varify: params[:varify])
+>>>>>>> 添加回收站功能
+=======
+					user_id = User.get_user params[:token]
+					top = params[:top].to_set
+
+					share = Share.create!(user: user_id, link: params[:link], varify: params[:varify])
+>>>>>>> 添加回收站功能
 					params[:data].each do |item|
+						is_top = top.include? item
+
 						if item['type'] == 'folder'
-							folder_items_id << item['id']
+
+							folder_opts << { folder_id: item['id'], share_id: share.id, top: is_top }
 						else
-							attachment_items_id << item['id']
+
+							attachment_opts << { attachment_id: item['id'], share_id: share.id, top: is_top }
 						end
 					end
-
-					if user
-						response = Share.share_to_others(params[:varify], folder_items_id, attachment_items_id)
-					end
+					response = Share.share_to_others(share, folder_opts, attachment_opts)
 
 					if response.is_a?(Exception)
-					  build_response(message: "错误", exception: response.message)
+						build_response(message: "错误", exception: response.message)
 					elsif response
-					  build_response(code: 1, data: response, message: "分享成功")
+						build_response(code: 1, data: response, message: "分享成功")
 					else
-					  build_response(code: -1, data: response, message: "分享失败")
+						build_response(code: -1, data: response, message: "分享失败")
 					end
-
 				end
 
 				desc "接收文件"
@@ -45,18 +61,32 @@ module Api
 					requires :varify, type: { value: String, message: "验证码不能为空"}
 				end
 				get 'getter' do
-					user = get_user params[:token]
+<<<<<<< HEAD
+<<<<<<< HEAD
+					user = User.get_user params[:token]
 
 					if user
-						response = Share.accept_from_others( user, params[:link], params[:varify])
+						response = Share.accept_from_others(user, params[:link], params[:varify])
+=======
+					user_id = User.get_user params[:token]
+
+					if user_id
+						response = Share.accept_from_others(user_id, params[:link], params[:varify])
+>>>>>>> 添加回收站功能
+=======
+					user_id = User.get_user params[:token]
+
+					if user_id
+						response = Share.accept_from_others(user_id, params[:link], params[:varify])
+>>>>>>> 添加回收站功能
 					end
 
 					if response.is_a?(Exception)
-					  build_response(message: "错误", exception: response.message)
+						build_response(message: "错误", exception: response.message)
 					elsif response
-					  build_response(code: 1, data: response, message: "获取文件成功")
+						build_response(code: 1, data: response, message: "获取文件成功")
 					else
-					  build_response(code: -1, data: response, message: "获取文件失败")
+						build_response(code: -1, data: response, message: "获取文件失败")
 					end
 
 				end
@@ -66,22 +96,59 @@ module Api
 					use :token_validater
 				end
 				get 'shared' do
-					user = get_user params[:token]
+<<<<<<< HEAD
+<<<<<<< HEAD
+					user = User.get_user params[:token]
+=======
+					user_id = User.get_user params[:token]
+>>>>>>> 添加回收站功能
+=======
+					user_id = User.get_user params[:token]
+>>>>>>> 添加回收站功能
 
-					if user
-						response = Share.get_shares user
+					if user_id
+						response = Share.get_shares user_id
 					end
 
 					if response.is_a?(Exception)
-					  build_response(message: "错误", exception: response.message)
+						build_response(message: "错误", exception: response.message)
 					elsif response
-					  build_response(code: 1, data: response, message: "获取分享列表成功")
+						build_response(code: 1, data: response, message: "获取分享列表成功")
 					else
-					  build_response(code: -1, data: response, message: "获取分享列表失败")
+						build_response(code: -1, data: response, message: "获取分享列表失败")
 					end
 				end
-			end
 
+				desc "取消分享"
+				params do
+					use :token_validater
+					requires :link, type: { value: String, message: "链接不能为空"}
+				end
+				post 'concel' do
+<<<<<<< HEAD
+<<<<<<< HEAD
+					user_id = Rails.cache.read params[:token]
+=======
+					user_id = User.get_user params[:token]
+>>>>>>> 添加回收站功能
+=======
+					user_id = User.get_user params[:token]
+>>>>>>> 添加回收站功能
+
+					if user_id
+						response = Share.cancel_shares params[:link]
+
+						if response.is_a?(Exception)
+							build_response(message: "错误", exception: response.message)
+						elsif response
+							build_response(code: 1, data: response, message: "取消分享成功")
+						else
+							build_response(code: -1, data: response, message: "取消分享失败")
+						end
+					end
+
+				end
+			end
 		end
 	end
 end

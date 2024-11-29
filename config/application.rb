@@ -22,7 +22,7 @@ module MypanBackend
     # in config/environments, which are processed later.
     #
     # config.time_zone = "Central Time (US & Canada)"
-    config.autoload_paths << Rails.root.join("lib")
+    config.autoload_paths += [ Rails.root.join("lib"), Rails.root.join("app", "services") ]
 
     # Only loads a smaller set of middleware suitable for API only apps.
     # Middleware like session, flash, cookies can be added back manually.
@@ -36,5 +36,7 @@ module MypanBackend
 
     config.middleware.use ActionDispatch::Cookies
     config.middleware.use ActionDispatch::Session::CookieStore
+
+    config.skylight.environments << "development"
   end
 end

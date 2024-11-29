@@ -1,9 +1,17 @@
 :concurrency: 5  # 并发 worker 数
 
 :queues:
-  - [default, 1]     # 默认队列，优先级最低
-  - [mailers, 5]     # 邮件队列，优先级较高
-  - [file_operation, 2] # 文件处理队列，优先级适中
+  - [default, 2]     # 默认队列，优先级最低
+  - [mailers, 4]     # 邮件队列，优先级较高
+  - [file_operation, 3] # 文件处理队列，优先级适中
+  - [cron_jobs, 1]
+
+:schedule:
+  update_file_monitor:
+    cron: "0 0 * * *"  # 每天零点
+    # cron: '*/15 * * * * *' #每15秒
+    class: "UpdateFileMonitorJob"
+    queue: cron_jobs
 
 # 日志文件路径
 :logfile: ./log/sidekiq.log
