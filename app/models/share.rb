@@ -41,15 +41,11 @@ class Share < ApplicationRecord
 		# end
 	end
 
->>>>>>> 添加回收站功能
-=======
-	end
-
 	#接收文件
 	def self.accept_from_others(user_id, link, varify)
 		begin
 			share = Share.find_by!(link: link)
-			root = Folder.find_by!(user: user_id, folder_name: 'root')
+			root = Folder.find_by!(user_id: user_id, folder_name: 'root')
 
 			if share && share.varify == varify
 				new_folders_with_attachments = get_folders_with_attachments user_id, share, root
@@ -91,13 +87,10 @@ class Share < ApplicationRecord
 			end
 		rescue => e
 			Share.models_logger.error e.message
-			p "错误", e.message
-			p "错误", e.backtrace
 			return e
 		end
 	end
 
->>>>>>> 添加回收站功能
   #取消分享
   def self.cancel_shares(link)
 		shares = Share.where(link: link)
@@ -157,14 +150,16 @@ class Share < ApplicationRecord
 						user_id: user_id,
 						folder_name: folder.result["folder_name"],
 						numbering: folder.result["numbering"],
-						ancestry: folder.result["top"] == true ? root.numbering : folder.result["ancestry"] ,
+						ancestry: folder.result["top"] == true ? root.numbering : folder.result["ancestry"],
+						in_bins: false,
 						attachments: folder.result["attachments"].map do |attachment|
 							Attachment.new(
 								file_name: attachment["file_name"],
 								file_type: attachment["file_type"],
 								b2_key: attachment["b2_key"],
 								byte_size: attachment["byte_size"],
-								file_monitor_id: attachment["file_monitor_id"]
+								file_monitor_id: attachment["file_monitor_id"],
+								in_bins: false
 							)
 						end
 					}
@@ -181,7 +176,8 @@ class Share < ApplicationRecord
 						file_type: attachment[1],
 						b2_key: attachment[2],
 						byte_size: attachment[3],
-						file_monitor_id: attachment[4]
+						file_monitor_id: attachment[4],
+						in_bins: false
 					}
 				end
 		end

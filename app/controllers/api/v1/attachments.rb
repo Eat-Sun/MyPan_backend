@@ -32,10 +32,11 @@ module Api
 
 				desc "下载文件"
 				params do
-					requires :key_and_names, type: { value: Array, message: "不能为空" }
+
 				end
 				get 'downloader' do
-					response = Attachment.download_from_blackblaze params[:b2_keys]
+					p "key_and_names:",params[:key_and_names]
+					response = Attachment.download_from_blackblaze params[:key_and_names]
 
 					if response.is_a?(Exception)
 					  build_response(message: "错误", exception: response.message)

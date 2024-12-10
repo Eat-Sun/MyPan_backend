@@ -8,15 +8,11 @@
 
 :schedule:
   update_file_monitor:
-    cron: "0 0 * * *"  # 每天零点
+    cron: "0 * * * *"  # 每天小时
     # cron: '*/15 * * * * *' #每15秒
     class: "UpdateFileMonitorJob"
     queue: cron_jobs
 
-# 日志文件路径
-:logfile: ./log/sidekiq.log
-
-# Sidekiq 会读取的 Redis 配置（可选）
 :redis:
   :url: redis://localhost:6379/0
   :namespace: sidekiq

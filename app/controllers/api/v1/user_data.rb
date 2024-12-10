@@ -10,7 +10,7 @@ module Api
 					use :token_validater
 				end
 				get 'getter' do
-					user_id = User.get_user params[:token]
+					user_id = Rails.cache.read params[:token]
 
 					if user_id
 						data = Rails.cache.read user_id
@@ -19,7 +19,6 @@ module Api
 					else
 						build_response(code: -1, data: nil, message: "未登录")
 					end
-
 				end
 
         desc "移动文件夹及文件"

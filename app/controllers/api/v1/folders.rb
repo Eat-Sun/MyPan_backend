@@ -14,7 +14,7 @@ module Api
 				post 'newFolder' do
 					user_id = User.get_user params[:token]
 
-					if user
+					if user_id
 						response = Folder.create_folder(user_id, params[:parent_folder_numbering], params[:new_folder])
 					else
 						build_response(message: "用户不合法", exception: response.message)

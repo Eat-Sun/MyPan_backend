@@ -13,13 +13,13 @@ class Folder < ApplicationRecord
 
 	#创建文件夹
 	def self.create_folder user_id, parent_folder_numbering, new_folder_name
-		parent_folder = Folder.find_by!(user: user_id, numbering: parent_folder_numbering)
+		parent_folder = Folder.find_by!(user_id: user_id, numbering: parent_folder_numbering)
 
 	  return false unless parent_folder
 
     begin
 			numbering = generate_numbering user_id
-      new_children_folder = parent_folder.children.create!(user: user_id, folder_name: new_folder_name, numbering: numbering)
+      new_children_folder = parent_folder.children.create!(user_id: user_id, folder_name: new_folder_name, numbering: numbering, in_bins: false)
     	if new_children_folder.persisted?
 				result = {
 					id: new_children_folder.id,

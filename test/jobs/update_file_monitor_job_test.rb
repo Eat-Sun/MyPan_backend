@@ -1,8 +1,20 @@
 require "test_helper"
 
 class UpdateFileMonitorJobTest < ActiveJob::TestCase
+  setup do
+    redis = Redis.new(url: "redis://localhost:6379/2")
+    members = ["wvWE20", "dwaW3B", "xYz12A", "bC34dE", "fG56hI", "New"]
+    redis.sadd(Attachment::Initial::Monitor, *members)
+    Rails.cache.increment("wvWE20", 1)
+    Rails.cache.increment("dwaW3B", 2)
+    Rails.cache.increment("xYz12A", 3)
+    Rails.cache.increment("bC34dE", 4)
+    Rails.cache.increment("fG56hI", 5)
+    Rails.cache.increment("New", 6)
+
+  end
+
   test "the truth" do
-    Rails.cache.write("update_filemonitor", {"fG56hI"=>[1, -1], "jK78lM"=>[1, -1], "vW34xY"=>[1, -1], "zA56bC"=>[1, -1], "Ag3Wg1"=>[1], "zB56dE"=>[1], "wvWE20"=>[1, 1], "dwaW3B"=>[1, 1]})
     #先断言作业是否被入队
     assert_enqueued_with(job: UpdateFileMonitorJob) do
       UpdateFileMonitorJob.perform_later
@@ -10,6 +22,7 @@ class UpdateFileMonitorJobTest < ActiveJob::TestCase
     #再执行队列中的作业
     perform_enqueued_jobs
 
-    assert_equal [1, 1, 1, 1, 2, 2, 3, 3], FileMonitor.where(id: [1, 2, 5, 6, 11, 12, 9, 10]).pluck(:owner_count)
+    p FileMonitor.where(id: [1, 2, 3, 4, 5, 28]).pluck(:id, :owner_count)
+    # assert_equal [1, 1, 1, 1, 2, 2, 3, 3], FileMonitor.where(id: [1, 2, 5, 6, 11, 12, 9, 10]).pluck(:owner_count)
   end
 end

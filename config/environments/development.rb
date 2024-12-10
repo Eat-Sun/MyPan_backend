@@ -31,7 +31,6 @@ Rails.application.configure do
   # end
   config.cache_store = :redis_cache_store, {
     url: ENV['REDIS_URL'] || 'redis://localhost:6379/2',
-    namespace: 'cache',
     expires_in: 1.day, # 设置缓存的过期时间
     reconnect_attempts: 1, # 重新连接的尝试次数
     error_handler: -> (method:, returning:, exception:) {

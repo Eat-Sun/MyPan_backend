@@ -17,7 +17,7 @@ module Api
 					user_id = User.get_user params[:token]
 					top = params[:top].to_set
 
-					share = Share.create!(user: user_id, link: params[:link], varify: params[:varify])
+					share = Share.create!(user_id: user_id, link: params[:link], varify: params[:varify])
 					params[:data].each do |item|
 						is_top = top.include? item
 

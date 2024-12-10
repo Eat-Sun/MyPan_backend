@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_11_27_070112) do
+ActiveRecord::Schema[7.1].define(version: 2024_12_10_070239) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -70,6 +70,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_11_27_070112) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "b2_key"
+    t.index ["b2_key"], name: "index_file_monitors_on_b2_key", unique: true
   end
 
   create_table "folders", force: :cascade do |t|

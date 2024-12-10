@@ -1,5 +1,5 @@
 module FileService
-  def self.get_filelist_from_backblaze user
+  def self.get_filelist_from_db user
     begin
       folders = Folder.where(user: user, in_bins: false)
         .pluck("id, folder_name, numbering, ancestry")

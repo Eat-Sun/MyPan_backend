@@ -14,9 +14,9 @@ class Attachment < ApplicationRecord
 	scope :undefined, -> { where(:file_type => 'undefined')}
 
 	scope :in_bins, -> { where(:in_bins => true).pluck(:id) }
-
 	module Initial
 		BucketName = { My_Pan: 'My-Pan'}
+    Monitor = "monitor"
 	end
 
 	#上传文件时更新数据库
@@ -26,7 +26,7 @@ class Attachment < ApplicationRecord
       attachment = nil
       transaction do
         result = User.update_used_space user_id, file_size
-        attachment = parent_folder.attachments.create!(file_name: file_name, file_type: file_type, b2_key: b2_key, byte_size: file_size) if result
+        attachment = parent_folder.attachments.create!(file_name: file_name, file_type: file_type, b2_key: b2_key, byte_size: file_size, in_bins: false) if result
 
       end
 
@@ -59,10 +59,14 @@ class Attachment < ApplicationRecord
     begin
       presigned_urls = []
 
-      key_and_names.each do |item|
-        obj = S3_Resource.bucket(Conf::BUCKETNAME[:My_Pan]).object(item[:key])
+      key_and_names.each do |index, item|
+        obj = S3_Resource.bucket(Conf::BUCKETNAME[:My_Pan]).object(item["key"])
         if obj.exists?
-          presigned_url = obj.presigned_url(:get, expires_in: 172800)
+          presigned_url = obj.presigned_url(
+            :get,
+            expires_in: 172800, #两天后过期
+            response_content_disposition: "attachment; filename=#{item["name"]}"
+          )
           presigned_urls << presigned_url
         end
       end
@@ -73,7 +77,6 @@ class Attachment < ApplicationRecord
 
       return e
     end
-
   end
 
   #删除文件
@@ -94,39 +97,39 @@ class Attachment < ApplicationRecord
   # end
 
 	# 获取文件
-  def self.get_filelist_from_backblaze user
-    begin
-      folders = Folder.where(user: user)
-        .pluck("id, folder_name, numbering, ancestry")
-        .map do |folder|
-          {
-            id: folder[0],
-            type: 'folder',
-            name: folder[1],
-            numbering: folder[2],
-            ancestry: folder[3],
-            children: []
-          }
-        end
-      attachments = Attachment.where(folder_id: folders.map { |folder| folder[:id] })
-        .pluck("id, folder_id, file_type, file_name, b2_key, byte_size, file_monitor_id")
-        .map do |attachment|
-          {
-            id: attachment[0],
-            folder_id: attachment[1],
-            type: attachment[2],
-            name: attachment[3],
-            b2_key: attachment[4],
-            size: attachment[5]
-          }
-        end
+  # def self.get_filelist_from_db user
+  #   begin
+  #     folders = Folder.where(user: user)
+  #       .pluck("id, folder_name, numbering, ancestry")
+  #       .map do |folder|
+  #         {
+  #           id: folder[0],
+  #           type: 'folder',
+  #           name: folder[1],
+  #           numbering: folder[2],
+  #           ancestry: folder[3],
+  #           children: []
+  #         }
+  #       end
+  #     attachments = Attachment.where(folder_id: folders.map { |folder| folder[:id] })
+  #       .pluck("id, folder_id, file_type, file_name, b2_key, byte_size, file_monitor_id")
+  #       .map do |attachment|
+  #         {
+  #           id: attachment[0],
+  #           folder_id: attachment[1],
+  #           type: attachment[2],
+  #           name: attachment[3],
+  #           b2_key: attachment[4],
+  #           size: attachment[5]
+  #         }
+  #       end
 
-      return [folders, attachments]
-    rescue => e
+  #     return [folders, attachments]
+  #   rescue => e
 
-      return e
-    end
-  end
+  #     return e
+  #   end
+  # end
 
   # 移动文件
   def self.move_attachments attachment_items_id, target_folder
@@ -153,41 +156,85 @@ class Attachment < ApplicationRecord
   private
     def plus_file_monitor
       redis = Attachment.redis
-      Rails.cache.fetch("update_filemonitor") { {} }
+      owner_count = 1
 
-      begin
-        key = self.b2_key
-        unless redis.hexists("update_filemonitor", key)
-          redis.hset("update_filemonitor", key, Marshal.dump([]))
-        end
-
-        value = Marshal.load(redis.hget("update_filemonitor", key))
-        redis.hset("update_filemonitor", key, Marshal.dump(value << 1))
-      rescue => e
-
-        raise e
+      if redis.sadd(Initial::Monitor, self.b2_key) == 1
+        owner_count = self.file_monitor&.owner_count + 1 || 1
       end
+      Rails.cache.increment(self.b2_key, owner_count)
     end
 
     def minus_file_monitor
       redis = Attachment.redis
-      unless Rails.cache.read "update_filemonitor"
-        Rails.cache.write("update_filemonitor", {})
+      owner_count = -1
+
+      if redis.sadd(Initial::Monitor, self.b2_key) == 1
+        owner_count = self.file_monitor&.owner_count - 1
       end
-
-      begin
-        key = self.b2_key
-        unless redis.hexists("update_filemonitor", key)
-          redis.hset("update_filemonitor", key, [])
-        end
-
-        value = redis.hget("update_filemonitor", key)
-        redis.hset("update_filemonitor", key, value << -1)
-      rescue => e
-
-        return e
-      end
+      Rails.cache.increment(self.b2_key, owner_count)
     end
+
+    # def plus_file_monitor
+    #   redis = Attachment.redis
+    #   field = self.b2_key
+    #   lock_field = "lock:#{field}"
+
+    #   begin
+    #     if redis.set(lock_field, 1, ex: 5, nx: true)
+    #       begin
+    #         redis.pipelined do
+    #           value = JSON.parse(redis.hget(Initial::MonitorKey, field) || '[]')
+
+    #           value << 1
+    #           redis.hset(Initial::MonitorKey, field, value.to_json)
+    #         end
+    #       ensure
+    #         redis.del(lock_field)
+    #       end
+    #     else
+    #       raise "获取锁失败"
+    #     end
+    #   rescue => e
+    #     if e.message == "获取锁失败"
+    #       sleep(3)
+    #       retry
+    #     else
+    #       raise e
+    #     end
+    #   end
+    # end
+
+    # def minus_file_monitor
+    #   def plus_file_monitor
+    #     redis = Attachment.redis
+    #     field = self.b2_key
+    #     lock_field = "lock:#{field}"
+
+    #     begin
+    #       if redis.set(lock_field, 1, ex: 5, nx: true)
+    #         begin
+    #           redis.pipelined do
+    #             value = JSON.parse(redis.hget(Initial::MonitorKey, field) || '[]')
+
+    #             value << -1
+    #             redis.hset(Initial::MonitorKey, field, value.to_json)
+    #           end
+    #         ensure
+    #           redis.del(lock_field)
+    #         end
+    #       else
+    #         raise "获取锁失败"
+    #       end
+    #     rescue => e
+    #       if e.message == "获取锁失败"
+    #         sleep(3)
+    #         retry
+    #       else
+    #         raise e
+    #       end
+    #     end
+    #   end
+    # end
 
     # def self.process_data arranged_data
     #   arranged_data.map do |folder, children|

@@ -83,7 +83,7 @@ class FileUploadChannel < ApplicationCable::Channel
       user_id = Rails.cache.read token
       file_type = 'undefined' if file_type == ""
       parent_folder = Folder.find parent_folder_id
-      file_name = File.basename(file_path, ".*")
+      file_name = File.basename(file_path)
       b2_key = SecureRandom.alphanumeric(6)
 
       UploadToB2Job.perform_later user_id, file_path.to_s, b2_key
