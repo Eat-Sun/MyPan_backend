@@ -30,38 +30,43 @@ class User < ApplicationRecord
 
   def self.update_used_space user_id, file_size
     begin
-      user = self.select(:id, :used_space, :total_space).find user_id
+      user = self.lock(true).select(:id, :used_space, :total_space).find user_id
 
-      user.with_lock do
-        allow_to_upload = (user.used_space + file_size) < user.total_space
-
-        user.update_attribute!(:used_space, user.used_space + file_size) if allow_to_upload
-      end
-
+      allow_to_upload = (user.used_space + file_size) < user.total_space
+      user.update_attribute!(:used_space, user.used_space + file_size) if allow_to_upload
     rescue => e
-
       User.models_logger.error e.message
     end
   end
 
-  def self.get_user token
+  def self.get_user token, req: "id"
     user_id = Rails.cache.read token
 
     if user_id
-
-      return user_id
+      if req == "id"
+        return user_id
+      else
+        return self.find user_id
+      end
     else
       decoded_token = OperateToken.decode_token token
 
       if decoded_token
         payload = decoded_token[0]
 
-        return payload["user_id"]
+        if req == "id"
+          return payload["user_id"]
+        else
+          return self.find payload["user_id"]
+        end
       else
-
         return nil
       end
     end
+  end
+
+  def self.get_root user_id
+    Folder.find_by(user_id: user_id, folder_name: 'root')
   end
 
   private
@@ -72,7 +77,7 @@ class User < ApplicationRecord
 
     def initial
       numbering = self.id.to_s << '_' << SecureRandom.alphanumeric(4).to_s
-      self.folders.create(folder_name: 'root', numbering: numbering, ancestry: nil)
+      self.folders.create(folder_name: 'root', numbering: numbering, ancestry: nil, in_bins: false)
     end
 
 end

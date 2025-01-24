@@ -1,0 +1,97 @@
+rd1:
+  id: 1
+  user_id: 1
+  mix_id: 11
+  type: folder
+  is_top: true
+
+rd2:
+  id: 2
+  user_id: 1
+  mix_id: 111
+  type: folder
+  is_top: false
+
+rd3:
+  id: 3
+  user_id: 1
+  mix_id: 112
+  type: folder
+  is_top: false
+
+rd4:
+  id: 4
+  user_id: 1
+  mix_id: 13
+  type: folder
+  is_top: true
+
+rd5:
+  id: 5
+  user_id: 1
+  mix_id: 131
+  type: folder
+  is_top: false
+
+rd6:
+  id: 6
+  user_id: 2
+  mix_id: 23
+  type: folder
+  is_top: true
+
+rd7:
+  id: 7
+  user_id: 2
+  mix_id: 231
+  type: folder
+  is_top: false
+
+rd8:
+  id: 8
+  user_id: 2
+  mix_id: 111
+  type: undefined
+  is_top: false
+
+rd9:
+  id: 9
+  user_id: 1
+  mix_id: 112
+  type: picture
+  is_top: false
+
+rd10:
+  id: 10
+  user_id: 1
+  mix_id: 1111
+  type: undefined
+  is_top: false
+
+rd11:
+  id: 11
+  user_id: 1
+  mix_id: 1112
+  type: word
+  is_top: false
+
+rd12:
+  id: 12
+  user_id: 1
+  mix_id: 1121
+  type: undefined
+  is_top: false
+
+rd13:
+  id: 13
+  user_id: 1
+  mix_id: 1122
+  type: undefined
+  is_top: false
+
+rd14:
+  id: 14
+  user_id: 1
+  mix_id: 11
+  type: picture
+  is_top: true

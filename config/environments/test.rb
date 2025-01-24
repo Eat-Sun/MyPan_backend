@@ -27,7 +27,8 @@ Rails.application.configure do
   config.consider_all_requests_local = true
   config.action_controller.perform_caching = false
   config.cache_store = :redis_cache_store, {
-    url: ENV['REDIS_URL'] || 'redis://localhost:6379/2',
+    url: 'redis://localhost:6379/0',
+    password: Rails.application.credentials.dig(:REDIS_PASSWORD),
     expires_in: 1.day, # 设置缓存的过期时间
     reconnect_attempts: 1, # 重新连接的尝试次数
     error_handler: -> (method:, returning:, exception:) {

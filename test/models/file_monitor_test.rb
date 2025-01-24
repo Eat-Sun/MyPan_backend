@@ -2,7 +2,7 @@ require "test_helper"
 
 class AttachmentMonitorTest < ActiveSupport::TestCase
   setup do
-    @redis = Redis.new(url: "redis://localhost:6379/2")
+    @redis = Redis.new(url: ENV['CACHE_URL'] || 'redis://localhost:6379/0', password: Rails.application.credentials.dig(:REDIS_PASSWORD))
     @redis.sadd("keys", "test:1")
     @redis.sadd("keys", "test:2")
     @redis.sadd("keys", "test:3")
@@ -11,9 +11,9 @@ class AttachmentMonitorTest < ActiveSupport::TestCase
     Rails.cache.increment('test:3')
   end
 
-  teardown do
-    Rails.cache.clear
-  end
+  # teardown do
+  #   Rails.cache.clear
+  # end
 
   test "the truth" do
     # threads = []

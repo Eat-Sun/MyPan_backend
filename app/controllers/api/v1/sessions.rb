@@ -17,26 +17,22 @@ module Api
 					token = nil
 
 					if user
-						user_data = Rails.cache.read user.id
-
-						if user_data.blank?
-							form_data = FileService.get_filelist_from_db(user)
-							free_space = User.get_free_space user.id
-
-							user_data = { form_data: form_data, free_space: free_space }
-						end
-						Rails.cache.write user.id, user_data
+						user_data = {
+							form_data: FileService.get_filelist_from_db(user),
+							free_space: User.get_free_space(user.id)
+						}
 
 						if params[:token].present?
 							decoded_token = OperateToken.decode_token params[:token]
 							# 检查解码结果是否有效
 							if decoded_token
 								token_payload = decoded_token.first
-								if token_payload["user_id"] == user.id
-									# 老用户，使用现有的 token
+								if user.id == token_payload["user_id"]
+									# 用户与token匹配，使用现有token
 									token = params[:token]
 								else
-									# 新用户，生成新的 token
+									# 用户与token不匹配，另一个用户在客户端上登陆
+									Rails.cache.delete params[:token]
 									token = OperateToken.generate_token(user.id)
 								end
 							else
@@ -49,7 +45,7 @@ module Api
 						end
 						Rails.cache.write token, user.id
 
-						build_response(code: 1, data: { token: token}, message: "登陆成功")
+						build_response(code: 1, data: { token: token, user_data: user_data}, message: "登陆成功")
 					else
 						build_response(code: -1, message: "用户名或密码错误")
 					end

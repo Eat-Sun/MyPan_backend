@@ -2,7 +2,7 @@ module OperateToken
 
   module Constants
     ALGORITHM = 'HS256'.freeze
-    JWT_SECRET = ENV['JWT_SECRET']
+    JWT_SECRET = Rails.application.credentials.dig(:JWT_SECRET)
     EXPIRATION_TIME = 7.days.from_now.to_i
   end
 

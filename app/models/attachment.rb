@@ -27,23 +27,23 @@ class Attachment < ApplicationRecord
       transaction do
         result = User.update_used_space user_id, file_size
         attachment = parent_folder.attachments.create!(file_name: file_name, file_type: file_type, b2_key: b2_key, byte_size: file_size, in_bins: false) if result
-
       end
 
       if attachment
         return {
           id: attachment.id,
+          folder_id: parent_folder.id,
           type: attachment.file_type,
           name: attachment.file_name,
           b2_key: attachment.b2_key,
-          size: attachment.byte_size
+          byte_size: attachment.byte_size
         }
       end
       return false
     rescue => e
-      if retries < 4
+      if retries < 2
         retries += 1
-        sleep 2
+        sleep 1
 
         retry
       else
@@ -153,25 +153,76 @@ class Attachment < ApplicationRecord
     end
   end
 
+  #获取活跃文件
+  def self.get_active_attachments folder_ids:
+    attachments = Attachment.where(folder_id: folder_ids, in_bins: false)
+      .pluck("id, folder_id, file_type, file_name, b2_key, byte_size")
+      .map do |attachment|
+        {
+          id: attachment[0],
+          folder_id: attachment[1],
+          type: attachment[2],
+          name: attachment[3],
+          b2_key: attachment[4],
+          byte_size: attachment[5]
+        }
+      end
+  end
+
+  #获取回收文件
+  def self.get_recycled user_id
+    attachments = Attachment.joins("INNER JOIN recycle_bins ON recycle_bins.mix_id = attachments.id").
+      where("recycle_bins.user_id = ? and recycle_bins.type != 'folder'", user_id).
+      where(in_bins: true).
+      pluck("recycle_bins.id", :id, :folder_id, :file_type, :file_name, :b2_key, :byte_size, "recycle_bins.is_top")
+      .map do |item|
+        {
+          id: item[0],
+          mix_id: item[1],
+          folder_id: item[2],
+          type: item[3],
+          name: item[4],
+          b2_key: item[5],
+          size: item[6],
+          is_top: item[7]
+        }
+      end
+  end
+
+  #从回收站恢复
+  def self.restore_from_bin attachments:
+    ids = attachments[:ids]
+    top_ids = attachments[:top_ids]
+    parent_id = attachments[:parent_id]
+
+    where(id: ids).update_all([
+      "in_bins = false, folder_id = CASE WHEN id IN (?) THEN ? ELSE folder_id END",
+      top_ids, parent_id
+    ])
+    # where(id: top_att_ids).update_all(in_bins: false, ancestry: ancestry)
+  end
+
   private
     def plus_file_monitor
-      redis = Attachment.redis
-      owner_count = 1
-
-      if redis.sadd(Initial::Monitor, self.b2_key) == 1
-        owner_count = self.file_monitor&.owner_count + 1 || 1
+      if redis.sadd(Initial::Monitor, self.b2_key) != 1
+        Rails.cache.increment(self.b2_key)
+      else
+        owner_count = FileMonitor.where(b2_key: self.b2_key).pluck(:owner_count)[0]
+        puts "开始处理：#{b2_key}，owner_count为:#{owner_count} \n"
+        count = (owner_count || 0) + 1
+        Rails.cache.increment(self.b2_key, count)
       end
-      Rails.cache.increment(self.b2_key, owner_count)
     end
 
     def minus_file_monitor
-      redis = Attachment.redis
-      owner_count = -1
-
-      if redis.sadd(Initial::Monitor, self.b2_key) == 1
-        owner_count = self.file_monitor&.owner_count - 1
+      if redis.sadd(Initial::Monitor, self.b2_key) != 1
+        Rails.cache.decrement(self.b2_key)
+      else
+        owner_count = FileMonitor.where(b2_key: self.b2_key).pluck(:owner_count)[0]
+        puts "开始处理：#{b2_key}，owner_count为:#{owner_count} \n"
+        count = owner_count - 1
+        Rails.cache.increment(self.b2_key, count)
       end
-      Rails.cache.increment(self.b2_key, owner_count)
     end
 
     # def plus_file_monitor

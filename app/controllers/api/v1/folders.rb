@@ -12,7 +12,7 @@ module Api
 					requires :parent_folder_numbering, type: String
 				end
 				post 'newFolder' do
-					user_id = User.get_user params[:token]
+					user_id = User.get_user params[:token], req: "id"
 
 					if user_id
 						response = Folder.create_folder(user_id, params[:parent_folder_numbering], params[:new_folder])
@@ -35,7 +35,7 @@ module Api
 					requires :target_folder_id, type: { value: String, message: "请输入文件夹名"}
 				end
 				post 'removeFolder' do
-					user_id = User.get_user params[:token]
+					user_id = User.get_user params[:token], req: "id"
 
 					if user_id
 						response = Folder.delete_folder(params[:target_folder_id])

@@ -1,19 +1,18 @@
 class RemoveAttachmentAndFolderJob < ApplicationJob
   queue_as :file_operation
 
-  def perform(folder_items_id, attachment_items_id)
-    if folder_items_id.present?
+  def perform(folder_ids, attachment_ids)
+    if folder_ids.present?
 
-      Folder.delete_folder folder_items_id
+      Folder.delete_folder folder_ids
     end
-    if attachment_items_id.present?
-      attachments = Attachment.where(id: attachment_items_id)
+    if attachment_ids.present?
+      attachments = Attachment.where(id: attachment_ids)
       b2_keys = nil
 
       begin
         ActiveRecord::Base.transaction do
           attachments.destroy_all
-
           b2_keys = FileMonitor.need_to_destroy
         end
 
@@ -26,6 +25,5 @@ class RemoveAttachmentAndFolderJob < ApplicationJob
         p "出现错误：", e
       end
     end
-
   end
 end

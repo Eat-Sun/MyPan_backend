@@ -12,7 +12,3 @@
     # cron: '*/15 * * * * *' #每15秒
     class: "UpdateFileMonitorJob"
     queue: cron_jobs
-
-:redis:
-  :url: redis://localhost:6379/0
-  :namespace: sidekiq

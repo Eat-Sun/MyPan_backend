@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_12_10_070239) do
+ActiveRecord::Schema[7.1].define(version: 2025_01_02_141134) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -99,13 +99,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_12_10_070239) do
     t.bigint "user_id"
     t.integer "mix_id"
     t.string "type"
-    t.string "name"
-    t.string "b2_key"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "byte_size"
-    t.string "numbering"
-    t.index ["mix_id", "b2_key"], name: "index_recycle_bins_on_mix_id_and_b2_key"
+    t.boolean "is_top"
     t.index ["user_id"], name: "index_recycle_bins_on_user_id"
   end
 

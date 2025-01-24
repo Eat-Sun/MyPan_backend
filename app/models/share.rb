@@ -79,7 +79,7 @@ class Share < ApplicationRecord
 							type: attachment[:file_type],
 							name: attachment[:file_name],
 							b2_key: attachment[:b2_key],
-							size: attachment[:byte_size]
+							byte_size: attachment[:byte_size]
 						}
 					end
 
@@ -128,8 +128,26 @@ class Share < ApplicationRecord
 			self.expires_at = 7.days.from_now
 		end
 
+		# def self.get_folders_data share: nil
+		# 	Folder.joins(:shares).where("shares.id = ?", share.id)
+		# 		.pluck(:id, :folder_name, :ancestry, Arel.sql("folders_shares.top as is_top"))
+
+		# end
+
+		# def self.get_attachments_data share: nil
+		# 	Attachment.joins(:shares).where("shares.id = ?", share.id)
+		# 		.pluck(:folder_id,  Arel.sql("attachments_shares.top as is_top"))
+		# end
+
+		# def self.arrange_data user_id: user_id, folders: nil, attachments: nil
+		# 	stack = []
+		# 	folders.map do |folder|
+		# 		Folder.new(user_id: user_id, folder_name: folder[1])
+		# 	end
+		# end
+
 		def self.get_folders_with_attachments user_id, share, root
-			Folder.joins(:attachments, :shares)
+			result = Folder.left_joins(:attachments, :shares)
 				.select("jsonb_build_object(
 						'folder_name', folders.folder_name,
 						'numbering', folders.numbering,
@@ -146,13 +164,16 @@ class Share < ApplicationRecord
 				.where("shares.id = ?", share.id)
 				.group("folders.id, folders_shares.top")
 				.map do |folder|
-					{
+					item = {
 						user_id: user_id,
 						folder_name: folder.result["folder_name"],
 						numbering: folder.result["numbering"],
 						ancestry: folder.result["top"] == true ? root.numbering : folder.result["ancestry"],
-						in_bins: false,
-						attachments: folder.result["attachments"].map do |attachment|
+						in_bins: false
+					}
+
+					if(folder.result["attachments"][0]["b2_key"])
+						item[:attachments] = folder.result["attachments"].map do |attachment|
 							Attachment.new(
 								file_name: attachment["file_name"],
 								file_type: attachment["file_type"],
@@ -160,10 +181,16 @@ class Share < ApplicationRecord
 								byte_size: attachment["byte_size"],
 								file_monitor_id: attachment["file_monitor_id"],
 								in_bins: false
-							)
+							) if attachment["b2_key"]
 						end
-					}
+					end
+
+					item
 				end
+		end
+
+		def self.build_attachments attachments
+
 		end
 
 		def self.get_top_attachments share, root

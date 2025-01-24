@@ -62,7 +62,6 @@ Folder1_2_sub2:
 
 Recycled1_3:
   id: 13
-  in_bins: true
   folder_name: Recycled1_3
   numbering: 1_hgux
   ancestry: 1_niqw
@@ -71,7 +70,6 @@ Recycled1_3:
 
 Recycled1_3_1:
   id: 131
-  in_bins: true
   folder_name: Recycled1_3_1
   numbering: 1_tmaq
   ancestry: 1_hgux
@@ -136,18 +134,17 @@ Folder2_2_sub2:
 
 Recycled2_3:
   id: 23
-  in_bins: true
   folder_name: Recycled2_3
   numbering: 2_kcvz
   ancestry: 2_dqfq
   user_id: 2
-  in_bins: false
+  in_bins: true
 
 Recycled2_3_1:
   id: 231
-  in_bins: true
   folder_name: Recycled2_3_1
   numbering: 2_cyra
   ancestry: 2_kcvz
   user_id: 2
-  in_bins: false
+  in_bins: true
+

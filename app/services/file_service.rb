@@ -1,34 +1,57 @@
 module FileService
-  def self.get_filelist_from_db user
+  module RecycleService
+    #添加到回收站
+    def self.add_to_bins user_id: nil, folder_ids: nil, attachment_ids: nil, opt: nil
+      ActiveRecord::Base.transaction do
+        Attachment.where(id: attachment_ids).update_all(in_bins: true)
+        Folder.where(id: folder_ids).update_all(in_bins: true)
+        RecycleBin.add_to_bins(user_id, opt)
+      end
+    end
+    #从回收站恢复
+    def self.restore folders: nil, attachments: nil, bin_ids: nil
+      ActiveRecord::Base.transaction do
+        Attachment.restore_from_bin attachments: attachments
+        Folder.restore_from_bin folders: folders
+        RecycleBin.remove bin_ids: bin_ids
+      end
+    end
+    #获取用户回收的文件
+    def self.get_recycled user_id: nil
+      attachments = Attachment.get_recycled user_id
+      folders = Folder.get_recycled user_id
+
+      return {
+        folders: folders,
+        attachments: attachments
+      }
+    end
+    #从回收站永久删除文件
+    def self.remove folder_ids: nil, attachment_ids: nil, bin_ids: nil
+      begin
+        if folder_ids.any? || attachment_ids.any?
+          RecycleBin.remove bin_ids: bin_ids
+          RemoveAttachmentAndFolderJob.perform_later(folder_ids, attachment_ids)
+        end
+      rescue => e
+        Attachment.models_logger.error e.message
+
+        return e
+      end
+    end
+  end
+  #获取用户的活跃文件
+  def self.get_filelist_from_db user, in_bins: false
     begin
-      folders = Folder.where(user: user, in_bins: false)
-        .pluck("id, folder_name, numbering, ancestry")
-        .map do |folder|
-          {
-            id: folder[0],
-            type: 'folder',
-            name: folder[1],
-            numbering: folder[2],
-            ancestry: folder[3],
-            children: []
-          }
-        end
-      attachments = Attachment.where(folder_id: folders.map { |folder| folder[:id] }, in_bins: false)
-        .pluck("id, folder_id, file_type, file_name, b2_key, byte_size, file_monitor_id")
-        .map do |attachment|
-          {
-            id: attachment[0],
-            folder_id: attachment[1],
-            type: attachment[2],
-            name: attachment[3],
-            b2_key: attachment[4],
-            size: attachment[5]
-          }
-        end
+      folders = Folder.get_active_folders user: user
+      folder_ids = folders.map { |folder| folder[:id] }
+      attachments = Attachment.get_active_attachments folder_ids: folder_ids
 
-      return [folders, attachments]
+      return {
+        folders: folders,
+        attachments: attachments
+      }
     rescue => e
-
       return e
     end
   end

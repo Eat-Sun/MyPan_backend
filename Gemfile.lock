@@ -1,5 +1,5 @@
 GEM
-  remote: https://rubygems.org/
+  remote: https://gems.ruby-china.com/
   specs:
     actioncable (7.1.4)
       actionpack (= 7.1.4)
@@ -128,7 +128,6 @@ GEM
     erubi (1.13.0)
     et-orbi (1.2.11)
       tzinfo
-    execjs (2.9.1)
     faraday (2.11.0)
       faraday-net_http (>= 2.0, < 3.4)
       logger
@@ -151,11 +150,6 @@ GEM
       mustermann-grape (~> 1.1.0)
       rack (>= 2)
       zeitwerk
-    grape-swagger (2.1.0)
-      grape (>= 1.7, < 3.0)
-      rack-test (~> 2)
-    grape-swagger-rails (0.5.0)
-      railties (>= 6.0.6.1)
     grape_on_rails_routes (0.3.2)
       rails (>= 3.1.1)
     hashie (5.0.0)
@@ -347,10 +341,7 @@ DEPENDENCIES
   aws-sdk-s3
   bootsnap
   debug
-  execjs
   grape
-  grape-swagger
-  grape-swagger-rails
   grape_on_rails_routes
   image_processing (~> 1.2)
   jwt

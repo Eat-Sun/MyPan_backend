@@ -14,7 +14,7 @@ module Api
 				post 'new' do
 					folder_opts = []
 					attachment_opts = []
-					user_id = User.get_user params[:token]
+					user_id = User.get_user params[:token], req: "id"
 					top = params[:top].to_set
 
 					share = Share.create!(user_id: user_id, link: params[:link], varify: params[:varify])
@@ -47,7 +47,7 @@ module Api
 					requires :varify, type: { value: String, message: "验证码不能为空"}
 				end
 				get 'getter' do
-					user_id = User.get_user params[:token]
+					user_id = User.get_user params[:token], req: "id"
 
 					if user_id
 						response = Share.accept_from_others(user_id, params[:link], params[:varify])
@@ -68,7 +68,7 @@ module Api
 					use :token_validater
 				end
 				get 'shared' do
-					user_id = User.get_user params[:token]
+					user_id = User.get_user params[:token], req: "id"
 
 					if user_id
 						response = Share.get_shares user_id
@@ -89,7 +89,7 @@ module Api
 					requires :link, type: { value: String, message: "链接不能为空"}
 				end
 				post 'concel' do
-					user_id = User.get_user params[:token]
+					user_id = User.get_user params[:token], req: "id"
 
 					if user_id
 						response = Share.cancel_shares params[:link]

@@ -86,12 +86,7 @@ class FileUploadChannel < ApplicationCable::Channel
       file_name = File.basename(file_path)
       b2_key = SecureRandom.alphanumeric(6)
 
-      UploadToB2Job.perform_later user_id, file_path.to_s, b2_key
-
       attachment = Attachment.update_of_upload_for_database user_id, parent_folder, file_size, file_name, b2_key, file_type
-      # p "attachment", attachment
-      if attachment
-        ActionCable.server.broadcast "messages_channel_#{user_id}", { type: 'finish', data: attachment }
-      end
+      UploadToB2Job.perform_later user_id, file_path.to_s, b2_key, attachment
     end
 end

@@ -9,13 +9,19 @@ module Api
           use :token_validater
           optional :folder_ids
           requires :attachment_ids
-          requires :mixed, type: { value: Array, message: "必须为数组" }
+          requires :opt
         end
         post 'recycle' do
-          user_id = User.get_user params[:token]
+          user_id = User.get_user params[:token], req: "id"
+          result = nil
+
           if user_id
-            user = User.find user_id
-            result = RecycleBin.add_to_bins user, params[:folder_ids], params[:attachment_ids], params[:mixed]
+            result = FileService::RecycleService.add_to_bins(
+              user_id: user_id,
+              folder_ids: params[:folder_ids],
+              attachment_ids: params[:attachment_ids],
+              opt: params[:opt]
+            )
           end
 
           if result.is_a? Exception
@@ -29,12 +35,25 @@ module Api
 
         desc "恢复文件"
         params do
-          optional :folder_ids, type: { value: Array, message: "必须为数组" }
-          requires :attachment_ids, type: { value: Array, message: "必须为数组" }
-          requires :bin_ids, type: :Array
+          use :token_validater
+          requires :folders, allow_blank: true, type: Hash do
+            requires :ids, type: { value: Array, message: "必须为数组" }
+            requires :top_ids, type: { value: Array, message: "必须为数组" }
+            requires :ancestry, type: { value: String, message: "必须为字符串" }
+          end
+          requires :attachments, allow_blank: true, type: Hash do
+            requires :ids, type: { value: Array, message: "必须为数组" }
+            requires :top_ids, type: { value: Array, message: "必须为数组" }
+            requires :parent_id, type: { value: Integer, message: "必须为数字" }
+          end
+          requires :bin_ids, type: { value: Array, message: "必须为数组" }
         end
         post 'restore' do
-          result = RecycleBin.restore params[:folder_ids], params[:attachment_ids], params[:bin_ids]
+          user_id = User.get_user params[:token], req: "id"
+
+          if user_id
+            result = FileService::RecycleService.restore(folders: params[:folders], attachments: params[:attachments], bin_ids: params[:bin_ids])
+          end
 
           if result.is_a? Exception
             build_response(message: "错误", exception: result.message)
@@ -49,10 +68,10 @@ module Api
         params do
           optional :folder_ids, type: { value: Array, message: "必须为数组" }
           requires :attachment_ids, type: { value: Array, message: "必须为数组" }
-          requires :bin_ids, type: :Array
+          requires :bin_ids, type: { value: Array, message: "必须为数组" }
         end
         post 'deleter' do
-          result = RecycleBin.remove params[:folder_ids], params[:attachment_ids], params[:bin_ids]
+          result = FileService::RecycleService.remove(folder_ids: params[:folder_ids], attachment_ids: params[:attachment_ids], bin_ids: params[:bin_ids])
 
           if result.is_a? Exception
             build_response(message: "错误", exception: result.message)
@@ -68,10 +87,10 @@ module Api
           use :token_validater
         end
         get 'getter' do
-          user_id = User.get_user params[:token]
+          user_id = User.get_user params[:token], req: "id"
 
           if user_id
-            result = RecycleBin.get_recycled user_id
+            result = FileService::RecycleService.get_recycled user_id: user_id
           end
 
           if result.is_a? Exception

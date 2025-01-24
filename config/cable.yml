@@ -1,11 +1,13 @@
 development:
   adapter: redis
   url: redis://localhost:6379/1
+  password: <%= Rails.application.credentials.dig(:REDIS_PASSWORD) %>
 
 test:
   adapter: test
 
 production:
   adapter: redis
-  url: <%= ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" } %>
+  url: <%= ENV['CABLE_URL'] %>
+  password: <%= Rails.application.credentials.dig(:REDIS_PASSWORD) %>
   channel_prefix: mypan_backend_production

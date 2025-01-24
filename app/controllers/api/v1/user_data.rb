@@ -24,24 +24,18 @@ module Api
         desc "移动文件夹及文件"
 				params do
 					use :token_validater
-					requires :data, type: JSON do
-						requires :filelist, type: { value: Array, message:"文件不能为空"}
-						requires :target_folder_id, type: { value: Integer, message: "目标文件夹不能为空"}
-					end
+					requires :target_folder_numbering, type: { value: String, message: "目标文件夹不能为空"}
+					optional :folder_ids, type: { value: Array }
+					requires :attachment_ids, type: { value: Array, message:"文件不能为空"}
 				end
 				post 'mover' do
-					user_id = User.get_user params[:token]
+					user_id = User.get_user params[:token], req: "id"
 
 					if user_id
-						folder_ids = []
-						attachment_ids = []
-						# p "params[:data][:filelist]",params[:data][:filelist]
 						begin
-							target_folder = Folder.find(params[:data][:target_folder_id])
-							classify params[:data][:filelist], folder_ids, attachment_ids
-
-							attachment_response = Attachment.move_attachments attachment_ids, target_folder
-							folder_response = Folder.move_folders folder_ids, target_folder
+							target_folder = Folder.find_by(numbering: params[:target_folder_numbering])
+							attachment_response = Attachment.move_attachments params[:attachment_ids], target_folder
+							folder_response = Folder.move_folders params[:folder_ids], target_folder
 
 							if attachment_response && folder_response
 								build_response(code: 1, message: "移动成功")

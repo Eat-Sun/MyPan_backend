@@ -3,7 +3,7 @@ class Folder < ApplicationRecord
 	extend FolderProcess::ProcessData
 
 	belongs_to :user
-  has_many :attachments, dependent: :destroy_async
+  has_many :attachments
 	has_many :folders_shares, class_name: "FolderShare", dependent: :delete_all
   has_many :shares, through: :folders_shares
 
@@ -43,11 +43,11 @@ class Folder < ApplicationRecord
 	end
 
 	#删除文件夹
-	def self.delete_folder target_folders_id
-		target_folders = Folder.where(id: target_folders_id)
+	def self.delete_folder folder_ids
+		target_folders = Folder.where(id: folder_ids)
 
 		begin
-			if target_folders.destroy_all
+			if target_folders.delete_all
 
 				return true
 			else
@@ -69,7 +69,7 @@ class Folder < ApplicationRecord
 
 		begin
 			if folders.present? and target_folder.present?
-				folders.update_all(ancestry: target_folder.id)
+				folders.update_all(ancestry: target_folder.numbering)
 
 				return true
 			else
@@ -81,6 +81,54 @@ class Folder < ApplicationRecord
 			p "出错：", e.message
 			raise e
 		end
+	end
+
+	#获取活跃文件夹
+	def self.get_active_folders user:
+		folders = user.folders.where(in_bins: false)
+			.pluck("id, folder_name, numbering, ancestry")
+			.map do |folder|
+				{
+					id: folder[0],
+					type: 'folder',
+					name: folder[1],
+					numbering: folder[2],
+					ancestry: folder[3],
+					children: []
+				}
+			end
+	end
+
+	#获取回收文件夹
+	def self.get_recycled user_id
+		folders = Folder.joins("INNER JOIN recycle_bins ON recycle_bins.user_id = folders.user_id AND recycle_bins.mix_id = folders.id").
+      where(user_id: user_id, in_bins: true).
+      where("recycle_bins.type = 'folder'").
+      pluck("recycle_bins.id", :id, :folder_name, :numbering, :ancestry, "recycle_bins.is_top")
+			.map do |item|
+				{
+					id: item[0],
+					mix_id: item[1],
+					type: 'folder',
+					name: item[2],
+					numbering: item[3],
+					ancestry: item[4],
+					is_top: item[5],
+					children: []
+				}
+			end
+	end
+
+	#从回收站恢复
+	def self.restore_from_bin folders:
+		ids = folders[:ids]
+    top_ids = folders[:top_ids]
+    ancestry = folders[:ancestry]
+
+		where(id: ids).update_all([
+			"in_bins = false, ancestry = CASE WHEN id IN (?) THEN ? ELSE ancestry END",
+      top_ids, ancestry
+		])
 	end
 
 	private

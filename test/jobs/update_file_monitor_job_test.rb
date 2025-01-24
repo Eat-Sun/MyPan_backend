@@ -2,7 +2,7 @@ require "test_helper"
 
 class UpdateFileMonitorJobTest < ActiveJob::TestCase
   setup do
-    redis = Redis.new(url: "redis://localhost:6379/2")
+    redis = Redis.new(url: ENV['CACHE_URL'] || 'redis://localhost:6379/0', password: Rails.application.credentials.dig(:REDIS_PASSWORD))
     members = ["wvWE20", "dwaW3B", "xYz12A", "bC34dE", "fG56hI", "New"]
     redis.sadd(Attachment::Initial::Monitor, *members)
     Rails.cache.increment("wvWE20", 1)
@@ -22,7 +22,7 @@ class UpdateFileMonitorJobTest < ActiveJob::TestCase
     #再执行队列中的作业
     perform_enqueued_jobs
 
-    p FileMonitor.where(id: [1, 2, 3, 4, 5, 28]).pluck(:id, :owner_count)
+    p FileMonitor.where(id: [1, 2, 3, 4, 5, 26]).pluck(:id, :owner_count)
     # assert_equal [1, 1, 1, 1, 2, 2, 3, 3], FileMonitor.where(id: [1, 2, 5, 6, 11, 12, 9, 10]).pluck(:owner_count)
   end
 end

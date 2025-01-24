@@ -1,4 +1,4 @@
-source 'https://rubygems.org'
+source 'https://gems.ruby-china.com'
 
 ruby "3.3.0"
 
@@ -14,13 +14,7 @@ gem "puma", ">= 5.0"
 
 gem "grape"
 
-gem "grape-swagger"
-
-gem "grape-swagger-rails"
-
 gem "grape_on_rails_routes"
-
-gem "execjs"
 
 gem "sorcery"
 

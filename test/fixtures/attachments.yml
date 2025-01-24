@@ -13,7 +13,7 @@ att1_1:
   byte_size: 186154
   folder_id: 1
   file_monitor_id: 1
-  in_bins: false
+  in_bins: ture
 
 att1_2:
   id: 12

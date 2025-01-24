@@ -9,8 +9,6 @@ class AttachmentTest < ActiveSupport::TestCase
     result = FileService.get_filelist_from_db(@user)
     puts result.to_json
     attachments(:att1_1).send(:plus_file_monitor)
-
-
     # assert_equal expected, result
   end
 
@@ -22,5 +20,6 @@ class AttachmentTest < ActiveSupport::TestCase
     p result
   end
 
+  test "更新User"
 
 end
