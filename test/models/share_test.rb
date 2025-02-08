@@ -64,7 +64,7 @@ class ShareTest < ActiveSupport::TestCase
         :type=>"picture",
         :name=>"att1_1",
         :b2_key=>"wvWE20",
-        :size=>"186154"
+        :byte_size=>"186154"
       },
       {
         :id=>2220,
@@ -72,7 +72,7 @@ class ShareTest < ActiveSupport::TestCase
         :type=>"word",
         :name=>"att1_2",
         :b2_key=>"dwaW3B",
-        :size=>"19861654"
+        :byte_size=>"19861654"
       },
       {
         :id=>2213,
@@ -80,7 +80,7 @@ class ShareTest < ActiveSupport::TestCase
         :type=>"undefined",
         :name=>"att11_1",
         :b2_key=>"fG56hI",
-        :size=>"51200"
+        :byte_size=>"51200"
       },
       {
         :id=>2214,
@@ -88,7 +88,7 @@ class ShareTest < ActiveSupport::TestCase
         :type=>"picture",
         :name=>"att11_2",
         :b2_key=>"jK78lM",
-        :size=>"307200"
+        :byte_size=>"307200"
       },
       {
         :id=>2215,
@@ -96,7 +96,7 @@ class ShareTest < ActiveSupport::TestCase
         :type=>"undefined",
         :name=>"att112_1",
         :b2_key=>"Ag3Wg1",
-        :size=>"189641"
+        :byte_size=>"189641"
       },
       {
         :id=>2216,
@@ -104,7 +104,7 @@ class ShareTest < ActiveSupport::TestCase
         :type=>"word",
         :name=>"att112_2",
         :b2_key=>"zB56dE",
-        :size=>"168198"
+        :byte_size=>"168198"
       },
       {
         :id=>2217,
@@ -112,7 +112,7 @@ class ShareTest < ActiveSupport::TestCase
         :type=>"undefined",
         :name=>"att111_1",
         :b2_key=>"vW34xY",
-        :size=>"256000"
+        :byte_size=>"256000"
       },
       {
         :id=>2218,
@@ -120,7 +120,7 @@ class ShareTest < ActiveSupport::TestCase
         :type=>"word",
         :name=>"att111_2",
         :b2_key=>"zA56bC",
-        :size=>"768000"
+        :byte_size=>"768000"
       }
     ]
 

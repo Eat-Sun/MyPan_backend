@@ -208,7 +208,7 @@ class Attachment < ApplicationRecord
         Rails.cache.increment(self.b2_key)
       else
         owner_count = FileMonitor.where(b2_key: self.b2_key).pluck(:owner_count)[0]
-        puts "开始处理：#{b2_key}，owner_count为:#{owner_count} \n"
+        # puts "开始处理：#{b2_key}，owner_count为:#{owner_count} \n"
         count = (owner_count || 0) + 1
         Rails.cache.increment(self.b2_key, count)
       end
@@ -219,7 +219,7 @@ class Attachment < ApplicationRecord
         Rails.cache.decrement(self.b2_key)
       else
         owner_count = FileMonitor.where(b2_key: self.b2_key).pluck(:owner_count)[0]
-        puts "开始处理：#{b2_key}，owner_count为:#{owner_count} \n"
+        # puts "开始处理：#{b2_key}，owner_count为:#{owner_count} \n"
         count = owner_count - 1
         Rails.cache.increment(self.b2_key, count)
       end
