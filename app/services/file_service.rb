@@ -27,10 +27,15 @@ module FileService
       }
     end
     #从回收站永久删除文件
-    def self.remove folder_ids: nil, attachment_ids: nil, bin_ids: nil
+    def self.remove user: nil, free_space: nil, folder_ids: nil, attachment_ids: nil, bin_ids: nil
       begin
         if folder_ids.any? || attachment_ids.any?
-          RecycleBin.remove bin_ids: bin_ids
+          p "result: #{user.total_space - free_space.to_i}"
+          ActiveRecord::Base.transaction do
+            user.update_attribute!(:used_space, user.total_space - free_space.to_i)
+            RecycleBin.remove bin_ids: bin_ids
+          end
+
           RemoveAttachmentAndFolderJob.perform_later(folder_ids, attachment_ids)
         end
       rescue => e

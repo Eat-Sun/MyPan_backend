@@ -62,10 +62,11 @@ class Attachment < ApplicationRecord
       key_and_names.each do |index, item|
         obj = S3_Resource.bucket(Conf::BUCKETNAME[:My_Pan]).object(item["key"])
         if obj.exists?
+          filename = CGI.escape(item["name"])
           presigned_url = obj.presigned_url(
             :get,
             expires_in: 172800, #两天后过期
-            response_content_disposition: "attachment; filename=#{item["name"]}"
+            response_content_disposition: "attachment; filename=\"#{filename}\""
           )
           presigned_urls << presigned_url
         end
@@ -183,7 +184,7 @@ class Attachment < ApplicationRecord
           type: item[3],
           name: item[4],
           b2_key: item[5],
-          size: item[6],
+          byte_size: item[6],
           is_top: item[7]
         }
       end

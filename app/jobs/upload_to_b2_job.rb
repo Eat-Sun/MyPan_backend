@@ -11,7 +11,7 @@ class UploadToB2Job < ApplicationJob
       progress = Proc.new do |bytes, totals|
         progress_percentage = (100.0 * bytes.sum / totals.sum).round(2)
         if(progress_percentage < 100.0)
-          ActionCable.server.broadcast "messages_channel_#{ user_id }", { type: 'processing', data: { b2_key: b2_key, name: file_name, size: totals.sum, percentage: progress_percentage } }
+          ActionCable.server.broadcast "messages_channel_#{ user_id }", { type: 'processing', data: { b2_key: b2_key, name: file_name, byte_size: totals.sum, percentage: progress_percentage } }
         else
           ActionCable.server.broadcast "messages_channel_#{user_id}", { type: 'finish', data: attachment }
         end

@@ -66,12 +66,16 @@ module Api
 
         desc "彻底删除文件"
         params do
+          requires :token, type: String
+          optional :free_space, type: Integer
           optional :folder_ids, type: { value: Array, message: "必须为数组" }
           requires :attachment_ids, type: { value: Array, message: "必须为数组" }
           requires :bin_ids, type: { value: Array, message: "必须为数组" }
         end
         post 'deleter' do
-          result = FileService::RecycleService.remove(folder_ids: params[:folder_ids], attachment_ids: params[:attachment_ids], bin_ids: params[:bin_ids])
+          p "param: #{params[:free_space]}"
+          user = User.get_user(params[:token], req: 'user')
+          result = FileService::RecycleService.remove(user: user, free_space: params[:free_space], folder_ids: params[:folder_ids], attachment_ids: params[:attachment_ids], bin_ids: params[:bin_ids])
 
           if result.is_a? Exception
             build_response(message: "错误", exception: result.message)
