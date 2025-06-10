@@ -10,8 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_01_02_141134) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_10_064807) do
+  create_schema "sql_stat_statement"
+
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_stat_statements"
   enable_extension "plpgsql"
 
   create_table "active_storage_attachments", force: :cascade do |t|
@@ -135,6 +138,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_02_141134) do
     t.datetime "activation_token_expires_at"
     t.decimal "total_space", precision: 12
     t.decimal "used_space", precision: 12
+    t.string "phone"
     t.index ["activation_token"], name: "index_users_on_activation_token"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["remember_me_token"], name: "index_users_on_remember_me_token"

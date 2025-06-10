@@ -18,6 +18,7 @@ module Api
           requires :user, type: Hash do
             requires :username, type: String
             requires :email, type: String
+            requires :phone, type: String
             requires :password, type: String
             requires :password_confirmation, type: String
             requires :captcha, type: String
@@ -34,6 +35,24 @@ module Api
           else
             error_messages = user.errors.full_messages.join(', ')
             error!(error_messages, 422)
+          end
+        end
+
+        desc '获取验证码'
+        params do
+          requires :phone, type: String
+        end
+        post 'verifycode' do
+          phone = params[:phone]
+          verify_code = LuosimaoSmsSender.generate_verify_code
+          sender = LuosimaoSmsSender.new(phone, verify_code)
+
+          result = sender.send
+
+          if result.err.zero?
+            build_response(code: 1, data: nil, message: 'success')
+          else
+            build_response(code: -1, data: nil, message: 'error')
           end
         end
       end
