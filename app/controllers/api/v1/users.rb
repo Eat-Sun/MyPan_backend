@@ -49,7 +49,7 @@ module Api
 
           result = sender.send
 
-          if result.err.zero?
+          if result.parsed_response['error'].to_i.zero?
             build_response(code: 1, data: nil, message: 'success')
           else
             build_response(code: -1, data: nil, message: 'error')
