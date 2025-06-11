@@ -1,14 +1,14 @@
-:concurrency: 5  # 并发 worker 数
+:concurrency: 5 # 并发 worker 数
 
 :queues:
-  - [default, 2]     # 默认队列，优先级最低
-  - [mailers, 4]     # 邮件队列，优先级较高
+  - [default, 2] # 默认队列，优先级最低
+  - [mailers, 4] # 邮件队列，优先级较高
   - [file_operation, 3] # 文件处理队列，优先级适中
   - [cron_jobs, 1]
 
 :schedule:
   update_file_monitor:
-    cron: "0 * * * *"  # 每天小时
-    # cron: '*/15 * * * * *' #每15秒
+    # cron: "0 * * * *" # 每天小时
+    cron: "*/15 * * * * *" #每15秒
     class: "UpdateFileMonitorJob"
     queue: cron_jobs
